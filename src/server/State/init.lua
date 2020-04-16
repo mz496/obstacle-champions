@@ -1,15 +1,16 @@
 State = {}
 
-State.__call = --[[State]] function(self, --[[string]] name)
-    o = {}
-    setmetatable(o, {__index = self})
-
+State.newInstance = --[[State]] function(self, --[[string]] name)
+    local instance = {}
+    self.__index = self
+    setmetatable(instance, self)
+    instance._new(instance, name)
+    return instance
 end
 
-State.new = --[[State]] function(self, --[[string]] name) {
+State._new = function(self, name)
     self._name = name
-    return self
-
+end
 
 State.execute = --[[void]] function(self)
     print("WARNING: base execution logic was not overridden")

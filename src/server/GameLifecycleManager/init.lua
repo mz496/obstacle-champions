@@ -6,14 +6,14 @@ local StateTransitionTable = require(script.Parent.StateTransitionTable)
 local GameLifecycleManager = {}
 
 GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
-    local STATE_START = State:new("Start")
-    local STATE_END = State:new("End")
-    local STATE_TIE = State:new("Tie")
+    local STATE_START = State:newInstance("Start")
+    local STATE_END = State:newInstance("End")
+    local STATE_TIE = State:newInstance("Tie")
     local EVENT_WIN = Event:new("Win")
     local EVENT_TIE = Event:new("Tie")
     local EVENT_LOSS = Event:new("Loss")
     self._currentState = STATE_START
-    print("CONSTRUCTOR: "..tostring(STATE_START)..tostring(self._currentState))
+    print("SHOULD BOTH BE STATE_START: "..tostring(STATE_START)..tostring(self._currentState))
     self._transitionTable = StateTransitionTable:new(
         StateTransition:new(STATE_START, STATE_END, {EVENT_WIN, EVENT_LOSS}),
         StateTransition:new(STATE_START, STATE_TIE, {EVENT_TIE}))
