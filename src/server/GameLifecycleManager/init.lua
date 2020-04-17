@@ -3,16 +3,21 @@ local State = require(script.Parent.State)
 local Event = require(script.Parent.Event)
 local StateTransition = require(script.Parent.StateTransition)
 local StateTransitionTable = require(script.Parent.StateTransitionTable)
+local Utils = require(game.ReplicatedStorage.Common.Utils)
 local GameLifecycleManager = {}
 
 GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
     local STATE_START = State("Start")
+    print("GLM STATE START: "..tostring(STATE_START))
+    print("GLM STATE START VERBOSE: "..Utils.objectToString(STATE_START))
     local STATE_END = State("End")
     local STATE_TIE = State("Tie")
     local EVENT_WIN = Event:new("Win")
     local EVENT_TIE = Event:new("Tie")
     local EVENT_LOSS = Event:new("Loss")
     self._currentState = STATE_START
+
+    print("STATE_TIE IS: "..tostring(STATE_TIE))
     print("SHOULD BOTH BE STATE_START: "..tostring(STATE_START)..tostring(self._currentState))
     self._transitionTable = StateTransitionTable:new(
         StateTransition:new(STATE_START, STATE_END, {EVENT_WIN, EVENT_LOSS}),
