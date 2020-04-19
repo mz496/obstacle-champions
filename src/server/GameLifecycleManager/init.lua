@@ -8,17 +8,22 @@ local GameLifecycleManager = {}
 
 GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
     local STATE_START = State("Start")
-    print("GLM STATE START: "..tostring(STATE_START))
-    print("GLM STATE START VERBOSE: "..Utils.objectToString(STATE_START))
+    STATE_START.execute = function(self)
+        Utils.logInfo("start state")
+    end
     local STATE_END = State("End")
+    STATE_END.execute = function(self)
+        Utils.logInfo("end state")
+    end
     local STATE_TIE = State("Tie")
+    STATE_TIE.execute = function(self)
+        Utils.logInfo("tie state")
+    end
     local EVENT_WIN = Event:new("Win")
     local EVENT_TIE = Event:new("Tie")
     local EVENT_LOSS = Event:new("Loss")
     self._currentState = STATE_START
 
-    print("STATE_TIE IS: "..tostring(STATE_TIE))
-    print("SHOULD BOTH BE STATE_START: "..tostring(STATE_START)..tostring(self._currentState))
     self._transitionTable = StateTransitionTable:new(
         StateTransition:new(STATE_START, STATE_END, {EVENT_WIN, EVENT_LOSS}),
         StateTransition:new(STATE_START, STATE_TIE, {EVENT_TIE}))

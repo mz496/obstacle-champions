@@ -15,8 +15,6 @@ return function()
             local EVENT_TIE = Event:new("Tie")
             local EVENT_LOSS = Event:new("Loss")
 
-            print(tostring(manager:getCurrentState()))
-
             expect(manager:getCurrentState():getName():match("Start")).to.be.ok()
         end)
     end)

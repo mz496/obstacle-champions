@@ -1,22 +1,17 @@
-Object = require(game.ReplicatedStorage.Common.Object)
+local Object = require(game.ReplicatedStorage.Common.Object)
+local Class = require(game.ReplicatedStorage.Common.Class)
+local Utils = require(game.ReplicatedStorage.Common.Utils)
 
-Class = require(game.ReplicatedStorage.Common.Class)
-
-
-
---print(tableToString(Object))
---print(tableToString(getmetatable(Object)))
 local State, super = Class.classDefinition(Object)
 State._className = "State"
-State._new = function(self, name)
+State._new = --[[State]] function(self, name)
     self = super._new(self)
-    print("STATE NEW")
     self._name = name
     return self
 end
 
 State.execute = --[[void]] function(self)
-    self:logWarn("base execution logic was not overridden")
+    Utils.logWarn("base execution logic was not overridden")
 end
 
 State.getName = --[[string]] function(self)
