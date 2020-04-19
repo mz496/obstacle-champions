@@ -1,6 +1,11 @@
-local StateTransitionTable = {}
+local Object = require(game.ReplicatedStorage.Common.Object)
+local Class = require(game.ReplicatedStorage.Common.Class)
+local Utils = require(game.ReplicatedStorage.Common.Utils)
 
-StateTransitionTable.new = --[[StateTransitionTable]] function(self, --[[StateTransition]] ...)
+local StateTransitionTable, super = Class.classDefinition(Object)
+StateTransitionTable._className = "StateTransitionTable"
+StateTransitionTable._new = --[[StateTransitionTable]] function(self, --[[StateTransition]] ...)
+    self = super._new(self)
     self._transitions = args
     return self
 end

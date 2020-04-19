@@ -42,5 +42,11 @@ Utils.logError = --[[void]] function(--[[string]] msg)
     game.TestService:Error(tostring(tick()).." [ERROR] "..msg)
 end
 
+Utils.logFatal = --[[void]] function(--[[string]] msg)
+    game.TestService:Error(tostring(tick()).." [FATAL] "..msg)
+    local x = nil
+    print(x.throw_intentional_error_for_stacktrace)
+end
+
 return Utils
 

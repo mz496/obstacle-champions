@@ -1,6 +1,11 @@
-local StateTransition = {}
+local Object = require(game.ReplicatedStorage.Common.Object)
+local Class = require(game.ReplicatedStorage.Common.Class)
+local Utils = require(game.ReplicatedStorage.Common.Utils)
 
-StateTransition.new = function(self, --[[State]] from, --[[State]] to, --[[ Event[] ]] on)
+local StateTransition, super = Class.classDefinition(Object)
+StateTransition._className = "StateTransition"
+StateTransition._new = --[[StateTransition]] function(self, --[[State]] from, --[[State]] to, --[[ Event[] ]] on)
+    self = super._new(self)
     self._from = from
     self._to = to
     -- TODO: Extract into this a library

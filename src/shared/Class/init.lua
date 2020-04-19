@@ -52,8 +52,6 @@ Class.classDefinition --[[<T,U extends Object>]] = function(--[[U]] methodTable_
     end
 
     local methodTable_metatableClassT = {}
-    print("METHOD TABLE BASE CLASS U "..Utils.tableToString(methodTable_baseClassU))
-    print("METHOD TABLE BASE CLASS U "..Utils.tableToString(getmetatable(methodTable_baseClassU)))
     -- Match methods in T first before looking elsewhere
     methodTable_metatableClassT.__index = methodTable_classT
     -- ClassT(arg) will call _newInstance(arg)

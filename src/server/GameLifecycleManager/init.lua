@@ -1,32 +1,31 @@
--- TODO: Create a shared datamodel for classpaths
-local State = require(script.Parent.State)
-local Event = require(script.Parent.Event)
-local StateTransition = require(script.Parent.StateTransition)
-local StateTransitionTable = require(script.Parent.StateTransitionTable)
-local Utils = require(game.ReplicatedStorage.Common.Utils)
+-- TODO: Create a shared datamodel for classpaths?
+local State =
+require(game.ServerScriptService.Server.State)
+local Event =
+require(game.ServerScriptService.Server.Event)
+local StateTransition =
+require(game.ServerScriptService.Server.StateTransition)
+local StateTransitionTable =
+require(game.ServerScriptService.Server.StateTransitionTable)
+local Utils =
+require(game.ReplicatedStorage.Common.Utils)
+local GameLifecycleConstants =
+require(game.ServerScriptService.Server.Constants.GameLifecycle)
+local States = GameLifecycleConstants.States
+local Events = GameLifecycleConstants.Events
+
+--[[
+GameLifecycleManager is a singleton managing the game state.
+It accepts events and transitions to new states accordingly using acceptEvent(self, event).
+]]
 local GameLifecycleManager = {}
 
 GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
-    local STATE_START = State("Start")
-    STATE_START.execute = function(self)
-        Utils.logInfo("start state")
-    end
-    local STATE_END = State("End")
-    STATE_END.execute = function(self)
-        Utils.logInfo("end state")
-    end
-    local STATE_TIE = State("Tie")
-    STATE_TIE.execute = function(self)
-        Utils.logInfo("tie state")
-    end
-    local EVENT_WIN = Event:new("Win")
-    local EVENT_TIE = Event:new("Tie")
-    local EVENT_LOSS = Event:new("Loss")
-    self._currentState = STATE_START
+    self._currentState = States.START
 
-    self._transitionTable = StateTransitionTable:new(
-        StateTransition:new(STATE_START, STATE_END, {EVENT_WIN, EVENT_LOSS}),
-        StateTransition:new(STATE_START, STATE_TIE, {EVENT_TIE}))
+    self._transitionTable = StateTransitionTable(
+        StateTransition(States.START, States.END, {Events.WIN, Events.LOSS}),
+        StateTransition(States.START, States.TIE, {Events.TIE}))
     return self
 end
 
