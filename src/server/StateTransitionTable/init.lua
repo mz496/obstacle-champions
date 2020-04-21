@@ -4,9 +4,9 @@ local Utils = require(game.ReplicatedStorage.Common.Utils)
 
 local StateTransitionTable, super = Class.classDefinition(Object)
 StateTransitionTable._className = "StateTransitionTable"
-StateTransitionTable._new = --[[StateTransitionTable]] function(self, --[[StateTransition]] ...)
+StateTransitionTable._new = --[[StateTransitionTable]] function(self, --[[ StateTransition[] ]] transitions)
     self = super._new(self)
-    self._transitions = args
+    self._transitions = transitions
     return self
 end
 

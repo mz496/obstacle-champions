@@ -23,16 +23,17 @@ local GameLifecycleManager = {}
 GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
     self._currentState = States.START
 
-    self._transitionTable = StateTransitionTable(
+    self._transitionTable = StateTransitionTable({
         StateTransition(States.START, States.END, {Events.WIN, Events.LOSS}),
-        StateTransition(States.START, States.TIE, {Events.TIE}))
+        StateTransition(States.START, States.TIE, {Events.TIE})
+    })
     return self
 end
 
 GameLifecycleManager.acceptEvent = --[[void]] function(self, --[[Event]] event)
     print("accepted event: " .. tostring(event))
     -- TODO: Have an event queue
-    self._handleEvent(event)
+    self:_handleEvent(event)
 end
 
 GameLifecycleManager.getCurrentState = --[[State]] function(self)
@@ -41,7 +42,7 @@ end
 
 GameLifecycleManager._handleEvent = --[[void]] function(self, --[[Event]] event)
     print("handling event: " .. tostring(event))
-    local testForTransitionState =self._transitionTable:testEventForTransitionFromState(event, self._currentState)
+    local testForTransitionState = self._transitionTable:testEventForTransitionFromState(event, self._currentState)
     if testForTransitionState ~= nil then
         print("transitioning from "..tostring(self._currentState).." to "..tostring(testForTransitionState))
         self._currentState = testForTransitionState

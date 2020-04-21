@@ -18,5 +18,11 @@ Event.__tostring = --[[string]] function(self)
     return "Event<name="..self._name..">"
 end
 
+Event.__eq = --[[boolean]] function(self, --[[Event]] op1, --[[Event]] op2)
+    if op1 == nil then return false end
+    if op2 == nil then return false end
+    return op1._name == op2._name
+end
+
 return Event
 
