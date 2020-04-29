@@ -11,6 +11,9 @@
       },
       "Models": {
         "$path": "src/serverstorage/models"
+      },
+      "Tools": {
+        "$path": "src/serverstorage/tools"
       }
     },
 
