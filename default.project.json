@@ -3,6 +3,17 @@
   "tree": {
     "$className": "DataModel",
 
+    "ServerStorage": {
+      "$className": "ServerStorage",
+
+      "Scripts": {
+        "$path": "src/serverstorage/scripts"
+      },
+      "Models": {
+        "$path": "src/serverstorage/models"
+      }
+    },
+
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
 
@@ -33,7 +44,7 @@
 
     "Workspace": {
       "$className": "Workspace",
-      "$path": "models"
+      "$path": "src/workspace"
     },
 
     "Lighting": {
