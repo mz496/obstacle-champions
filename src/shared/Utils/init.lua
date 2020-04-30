@@ -48,5 +48,71 @@ Utils.logFatal = --[[void]] function(--[[string]] msg)
     print(x.throw_intentional_error_for_stacktrace)
 end
 
-return Utils
+Utils.truncateNumber = --[[string]] function(--[[number]] n)
+    if (n == 0) then
+        return "0"
+    end
+    if (n == math.floor(n)) then
+        return tostring(n)
+    end
+    -- This is one-indexed
+    local decimalPointIndex = 2 + math.floor(math.log10(math.abs(n)))
+    local decimalPlaces = 3
+    if (n < 0) then
+        decimalPointIndex = decimalPointIndex + 1
+    end
+    return string.sub(tostring(n), 1, decimalPointIndex + decimalPlaces)
+end
 
+Utils.toStringVector2 = --[[string]] function(--[[Vector2]] v)
+    return "Vector2("..Utils.truncateNumber(v.X)..", "..Utils.truncateNumber(v.Y)..")"
+end
+
+Utils.toStringVector3 = --[[string]] function(--[[Vector3]] v)
+    return "Vector3("..Utils.truncateNumber(v.X)..", "..Utils.truncateNumber(v.Y)..", "..Utils.truncateNumber(v.Z)..")"
+end
+
+Utils.toStringRay = --[[string]] function(--[[Ray]] r)
+    return "Ray(origin="..Utils.toStringVector3(r.Origin)..", direction="..Utils.toStringVector3(r.Direction)..")"
+end
+
+Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
+    local viz = Instance.new("Model")
+    viz.Name = Utils.toStringRay(r)
+    viz.Parent = game.Workspace.Terrain
+
+    local s = Instance.new("Part")
+    s.Anchored = true
+    s.Transparency = 1
+    s.Size = Vector3.new(0.1, 0.1, 0.1)
+    s.Position = r.Origin
+    s.Name = "s:"..Utils.toStringVector3(s.Position)
+    s.Parent = viz
+
+    local t = Instance.new("Part")
+    t.Anchored = true
+    t.Transparency = 1
+    s.Size = Vector3.new(0.1, 0.1, 0.1)
+    t.Position = r.Origin + r.Direction
+    t.Name = "t:"..Utils.toStringVector3(t.Position)
+    t.Parent = viz
+
+    local sAttachment = Instance.new("Attachment")
+    sAttachment.Parent = s
+
+    local tAttachment = Instance.new("Attachment")
+    tAttachment.Parent = t
+
+    local b = Instance.new("Beam")
+    b.Segments = 1
+    b.Width0 = 0.1
+    b.Width1 = 0.1
+    b.Attachment0 = sAttachment
+    b.Attachment1 = tAttachment
+    b.FaceCamera = true
+    b.Transparency = NumberSequence.new(0)
+    b.Color = ColorSequence.new(Color3.new(1,1,0), Color3.new(1,0,1))
+    b.Parent = viz
+end
+
+return Utils
