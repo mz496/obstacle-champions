@@ -48,6 +48,10 @@ Utils.logFatal = --[[void]] function(--[[string]] msg)
     print(x.throw_intentional_error_for_stacktrace)
 end
 
+Utils.round = --[[number]] function(--[[number]] n)
+    return n + 0.5 - (n + 0.5) % 1
+end
+
 Utils.truncateNumber = --[[string]] function(--[[number]] n)
     if (n == 0) then
         return "0"
@@ -76,30 +80,29 @@ Utils.toStringRay = --[[string]] function(--[[Ray]] r)
     return "Ray(origin="..Utils.toStringVector3(r.Origin)..", direction="..Utils.toStringVector3(r.Direction)..")"
 end
 
-Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
+Utils.placeMarker = function(--[[Vector3]] pos, --[[string]] name, --[[object]] parent)
+    local p = Instance.new("Part")
+    p.Anchored = true
+    p.CanCollide = false
+    p.Locked = true
+    p.Size = Vector3.new(0.1, 0.1, 0.1)
+    p.Color = Color3.new(1, 1, 1)
+    p.Name = name
+    p.Position = pos
+    p.Parent = parent
+    return p
+end
+
+Utils.placeBeam = function(--[[Vector3]] sPos, --[[Vector3]] tPos, --[[string]] name, --[[ColorSequence]] colorSequence)
     local viz = Instance.new("Model")
-    viz.Name = Utils.toStringRay(r)
+    viz.Name = name
     viz.Parent = game.Workspace.Terrain
 
-    local s = Instance.new("Part")
-    s.Anchored = true
-    s.CanCollide = false
-    s.Locked = true
+    local s = Utils.placeMarker(sPos, "s:"..Utils.toStringVector3(sPos), viz)
     s.Transparency = 1
-    s.Size = Vector3.new(0.1, 0.1, 0.1)
-    s.Position = r.Origin
-    s.Name = "s:"..Utils.toStringVector3(s.Position)
-    s.Parent = viz
 
-    local t = Instance.new("Part")
-    t.Anchored = true
-    t.CanCollide = false
-    t.Locked = true
+    local t = Utils.placeMarker(tPos, "t:"..Utils.toStringVector3(tPos), viz)
     t.Transparency = 1
-    t.Size = Vector3.new(0.1, 0.1, 0.1)
-    t.Position = r.Origin + r.Direction
-    t.Name = "t:"..Utils.toStringVector3(t.Position)
-    t.Parent = viz
 
     local sAttachment = Instance.new("Attachment")
     sAttachment.Parent = s
@@ -115,8 +118,12 @@ Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
     b.Attachment1 = tAttachment
     b.FaceCamera = true
     b.Transparency = NumberSequence.new(0)
-    b.Color = ColorSequence.new(Color3.new(1,1,0), Color3.new(1,0,1))
+    b.Color = colorSequence
     b.Parent = viz
+end
+
+Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
+    Utils.placeBeam(r.Origin, r.Origin + r.Direction, Utils.toStringRay(r), ColorSequence.new(Color3.new(1,1,0), Color3.new(1,0,1)))
 end
 
 return Utils
