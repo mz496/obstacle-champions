@@ -83,6 +83,8 @@ Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
 
     local s = Instance.new("Part")
     s.Anchored = true
+    s.CanCollide = false
+    s.Locked = true
     s.Transparency = 1
     s.Size = Vector3.new(0.1, 0.1, 0.1)
     s.Position = r.Origin
@@ -91,8 +93,10 @@ Utils.visualizeRay = --[[void]] function(--[[Ray]] r)
 
     local t = Instance.new("Part")
     t.Anchored = true
+    t.CanCollide = false
+    t.Locked = true
     t.Transparency = 1
-    s.Size = Vector3.new(0.1, 0.1, 0.1)
+    t.Size = Vector3.new(0.1, 0.1, 0.1)
     t.Position = r.Origin + r.Direction
     t.Name = "t:"..Utils.toStringVector3(t.Position)
     t.Parent = viz
