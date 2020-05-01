@@ -3,7 +3,7 @@ local Utils = require(game.ReplicatedStorage.Common.Utils)
 -- Static class that loads maps
 local MapLoader = {}
 
-MapLoader.loadMap = function(--[[Model]] model, --[[CFrame]] destCFrame)
+MapLoader.loadMap = --[[Object]] function(--[[Model]] model, --[[CFrame]] destCFrame)
     local anchor = model.PrimaryPart
     if anchor == nil then
         Utils.logError("Map PrimaryPart not found")
@@ -13,7 +13,7 @@ MapLoader.loadMap = function(--[[Model]] model, --[[CFrame]] destCFrame)
     modelCopy = model:Clone()
     modelCopy.Parent = game.Workspace
     modelCopy:SetPrimaryPartCFrame(destCFrame)
+    return modelCopy
 end
 
 return MapLoader
-

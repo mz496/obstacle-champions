@@ -1,11 +1,14 @@
 local Utils = require(game.ReplicatedStorage.Common.Utils)
+local MapLoader = require(game.ReplicatedStorage.Common.MapLoader)
 
 local tool = script.Parent
 local player = game.Players.LocalPlayer
 
 -- Places voxels' center coordinates at multiples of VOXEL_SIZE
 local VOXEL_SIZE = 10
+local boundingBoxIsActive = false
 local boundingBoxRef = nil
+local boundedObjectRef = nil
 local worldCoordinatesMouseLocation = nil
 local voxelCenterMouseLocation = nil
 
@@ -62,11 +65,19 @@ local renderBoundingBox = --[[void]] function(--[[Vector3]] center)
     Utils.placeBeam(p2, p6, "e26", color, box)
     Utils.placeBeam(p3, p7, "e37", color, box)
     Utils.placeBeam(p4, p8, "e48", color, box)
+
+    boundedObjectRef = MapLoader.loadMap(game.Workspace.TestObstacle, CFrame.new(center))
+    boundingBoxIsActive = true
 end
 
-local destroyBoundingBox = --[[void]] function()
-    boundingBoxRef:Destroy()
-    boundingBoxRef.Parent = nil
+local attemptToDestroyBoundingBox = --[[void]] function()
+    if (boundingBoxIsActive == true) then
+        boundingBoxIsActive = false
+        boundingBoxRef:Destroy()
+        boundingBoxRef.Parent = nil
+        boundedObjectRef:Destroy()
+        boundedObjectRef.Parent = nil
+    end
 end
 
 -- EVENT HOOKS
@@ -79,9 +90,7 @@ local onEquip = function(mouse)
         local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t)
         if (currentVoxelCenterMouseLocation ~= voxelCenterMouseLocation) then
             -- This should only happen the first time the tool is equipped
-            if (boundingBoxRef ~= nil) then
-                destroyBoundingBox()
-            end
+            attemptToDestroyBoundingBox()
             renderBoundingBox(currentVoxelCenterMouseLocation)
             Utils.visualizeRay(Ray.new(s, worldCoordinatesMouseLocation - s))
             voxelCenterMouseLocation = currentVoxelCenterMouseLocation
@@ -94,9 +103,7 @@ local onEquip = function(mouse)
     mouse.Move:Connect(onMouseMove)
 end
 local onUnequip = function()
-    if (boundingBoxRef ~= nil) then
-        destroyBoundingBox()
-    end
+    attemptToDestroyBoundingBox()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
 end
 local onActivate = function()
