@@ -5,6 +5,9 @@ local player = game.Players.LocalPlayer
 
 -- Places voxels' center coordinates at multiples of VOXEL_SIZE
 local VOXEL_SIZE = 10
+local boundingBoxRef = nil
+local worldCoordinatesMouseLocation = nil
+local voxelCenterMouseLocation = nil
 
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
@@ -23,24 +26,81 @@ local getFarthestVisibleVoxelCenter = --[[Vector3]] function(--[[Vector3]] s, --
     return getVoxelCenter(TminusEpsilonST)
 end
 
+local renderBoundingBox = --[[void]] function(--[[Vector3]] center)
+    --[[ Viewed from the top front:
+    21
+    34
+
+    65
+    78
+    ]]
+    local p1 = center + Vector3.new(VOXEL_SIZE/2, VOXEL_SIZE/2, VOXEL_SIZE/2)
+    local p2 = p1 + Vector3.new(-VOXEL_SIZE, 0, 0)
+    local p3 = p2 + Vector3.new(0, 0, -VOXEL_SIZE)
+    local p4 = p3 + Vector3.new(VOXEL_SIZE, 0, 0)
+    local p5 = p1 + Vector3.new(0, -VOXEL_SIZE, 0)
+    local p6 = p2 + Vector3.new(0, -VOXEL_SIZE, 0)
+    local p7 = p3 + Vector3.new(0, -VOXEL_SIZE, 0)
+    local p8 = p4 + Vector3.new(0, -VOXEL_SIZE, 0)
+    local color = ColorSequence.new(Color3.new(0,1,1))
+    local box = Instance.new("Model")
+    box.Name = "BoundingBox"
+    box.Parent = game.Workspace.Terrain
+    boundingBoxRef = box
+
+    Utils.placeBeam(p1, p2, "e12", color, box)
+    Utils.placeBeam(p2, p3, "e23", color, box)
+    Utils.placeBeam(p3, p4, "e34", color, box)
+    Utils.placeBeam(p4, p1, "e41", color, box)
+
+    Utils.placeBeam(p5, p6, "e56", color, box)
+    Utils.placeBeam(p6, p7, "e67", color, box)
+    Utils.placeBeam(p7, p8, "e78", color, box)
+    Utils.placeBeam(p8, p5, "e85", color, box)
+
+    Utils.placeBeam(p1, p5, "e15", color, box)
+    Utils.placeBeam(p2, p6, "e26", color, box)
+    Utils.placeBeam(p3, p7, "e37", color, box)
+    Utils.placeBeam(p4, p8, "e48", color, box)
+end
+
+local destroyBoundingBox = --[[void]] function()
+    boundingBoxRef:Destroy()
+    boundingBoxRef.Parent = nil
+end
+
 -- EVENT HOOKS
 local onEquip = function(mouse)
-    Utils.logInfo(player.Name .. " equipped " .. tool.Name)
+    Utils.logDebug(player.Name .. " equipped " .. tool.Name)
     local onMouseMove = function()
         local s = player.Character.HumanoidRootPart.CFrame.p
         local t = mouse.Hit.p
-        local los = Ray.new(s, t-s)
-        local losUnit = los.Unit
-        Utils.placeMarker(getFarthestVisibleVoxelCenter(s, t), "n", game.Workspace.Terrain)
-        Utils.visualizeRay(Ray.new(s, t-s))
+        worldCoordinatesMouseLocation = t
+        local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t)
+        if (currentVoxelCenterMouseLocation ~= voxelCenterMouseLocation) then
+            -- This should only happen the first time the tool is equipped
+            if (boundingBoxRef ~= nil) then
+                destroyBoundingBox()
+            end
+            renderBoundingBox(currentVoxelCenterMouseLocation)
+            Utils.visualizeRay(Ray.new(s, worldCoordinatesMouseLocation - s))
+            voxelCenterMouseLocation = currentVoxelCenterMouseLocation
+            Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(voxelCenterMouseLocation))
+        end
+        --renderBoundingBox(getFarthestVisibleVoxelCenter(s, t))
+        --Utils.placeMarker(getFarthestVisibleVoxelCenter(s, t), "n", game.Workspace.Terrain)
+        --Utils.visualizeRay(Ray.new(s, t-s))
     end
     mouse.Move:Connect(onMouseMove)
 end
 local onUnequip = function()
-    Utils.logInfo(player.Name .. " unequipped " .. tool.Name)
+    if (boundingBoxRef ~= nil) then
+        destroyBoundingBox()
+    end
+    Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
 end
 local onActivate = function()
-    Utils.logInfo(player.Name .. " activated " .. tool.Name)
+    Utils.logDebug(player.Name .. " activated " .. tool.Name)
     --[[
     local vector2CursorPosition = game:GetService("UserInputService"):GetMouseLocation()
     local rayViewport = game.Workspace.CurrentCamera:ViewportPointToRay(vector2CursorPosition.x, vector2CursorPosition.y, 0)
@@ -51,7 +111,7 @@ local onActivate = function()
 
 end
 local onDeactivate = function()
-    Utils.logInfo(player.Name .. " deactivated " .. tool.Name)
+    Utils.logDebug(player.Name .. " deactivated " .. tool.Name)
 end
 
 tool.Equipped:Connect(onEquip)

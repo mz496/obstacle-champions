@@ -93,10 +93,10 @@ Utils.placeMarker = function(--[[Vector3]] pos, --[[string]] name, --[[object]] 
     return p
 end
 
-Utils.placeBeam = function(--[[Vector3]] sPos, --[[Vector3]] tPos, --[[string]] name, --[[ColorSequence]] colorSequence)
+Utils.placeBeam = function(--[[Vector3]] sPos, --[[Vector3]] tPos, --[[string]] name, --[[ColorSequence]] colorSequence, --[[Object]] parent)
     local viz = Instance.new("Model")
     viz.Name = name
-    viz.Parent = game.Workspace.Terrain
+    viz.Parent = parent or game.Workspace.Terrain
 
     local s = Utils.placeMarker(sPos, "s:"..Utils.toStringVector3(sPos), viz)
     s.Transparency = 1
