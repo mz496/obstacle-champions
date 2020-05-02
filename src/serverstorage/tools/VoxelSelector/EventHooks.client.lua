@@ -6,6 +6,7 @@ local player = game.Players.LocalPlayer
 
 -- Places voxels' center coordinates at multiples of VOXEL_SIZE
 local VOXEL_SIZE = 10
+
 local boundingBoxIsActive = false
 local boundingBoxRef = nil
 local boundedObjectRef = nil
@@ -114,6 +115,14 @@ local onUnequip = function()
 end
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)
+    -- TODO: convert rotation from deg vector into actual direction
+    local rayLook = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.LookVector)
+    local rayUp = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.UpVector)
+    local rayRight = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.RightVector)
+    --Utils.logDebug(Utils.toStringRay(rayFacing))
+    Utils.visualizeRay(rayLook.Unit)
+    Utils.visualizeRay(rayUp.Unit)
+    Utils.visualizeRay(rayRight.Unit)
     --[[
     local vector2CursorPosition = game:GetService("UserInputService"):GetMouseLocation()
     local rayViewport = game.Workspace.CurrentCamera:ViewportPointToRay(vector2CursorPosition.x, vector2CursorPosition.y, 0)
