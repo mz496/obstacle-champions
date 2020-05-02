@@ -22,8 +22,13 @@ end
 
 -- Returns the center of the farthest observed voxel along a vector from s to t
 -- Take a point along the s-t vector almost at t but just a bit toward s and find its corresponding voxel
-local getFarthestVisibleVoxelCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t)
-    local epsilon = 0.001
+local getFarthestVisibleVoxelCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Object]] target)
+    local epsilon = nil
+    if (target ~= nil and target.Parent == boundedObjectRef) then
+        epsilon = -0.001
+    else
+        epsilon = 0.001
+    end
     local epsilonST = (t-s) * epsilon
     local TminusEpsilonST = t - epsilonST
     return getVoxelCenter(TminusEpsilonST)
@@ -86,13 +91,14 @@ local onEquip = function(mouse)
     local onMouseMove = function()
         local s = player.Character.HumanoidRootPart.CFrame.p
         local t = mouse.Hit.p
+        local target = mouse.Target
         worldCoordinatesMouseLocation = t
-        local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t)
+        local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t, target)
         if (currentVoxelCenterMouseLocation ~= voxelCenterMouseLocation) then
             -- This should only happen the first time the tool is equipped
             attemptToDestroyBoundingBox()
             renderBoundingBox(currentVoxelCenterMouseLocation)
-            Utils.visualizeRay(Ray.new(s, worldCoordinatesMouseLocation - s))
+            --Utils.visualizeRay(Ray.new(s, worldCoordinatesMouseLocation - s))
             voxelCenterMouseLocation = currentVoxelCenterMouseLocation
             Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(voxelCenterMouseLocation))
         end
