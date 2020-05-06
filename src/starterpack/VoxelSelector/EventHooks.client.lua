@@ -1,9 +1,6 @@
 local Utils = require(game.ReplicatedStorage.Common.Utils)
 local MapLoader = require(game.ReplicatedStorage.Common.MapLoader)
-for i,c in pairs(script.Parent:GetChildren()) do
-    print(i)
-    print(c)
-end
+-- Other scripts in this tool may not have replicated yet?
 local Fly = require(script.Parent:WaitForChild("Fly"))
 
 local tool = script.Parent
@@ -123,22 +120,6 @@ local onUnequip = function()
 end
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)
-    -- TODO: convert rotation from deg vector into actual direction
-    local rayLook = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.LookVector)
-    local rayUp = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.UpVector)
-    local rayRight = Ray.new(player.Character.HumanoidRootPart.CFrame.p, player.Character.HumanoidRootPart.CFrame.RightVector)
-    --Utils.logDebug(Utils.toStringRay(rayFacing))
-    Utils.visualizeRay(rayLook.Unit)
-    Utils.visualizeRay(rayUp.Unit)
-    Utils.visualizeRay(rayRight.Unit)
-    --[[
-    local vector2CursorPosition = game:GetService("UserInputService"):GetMouseLocation()
-    local rayViewport = game.Workspace.CurrentCamera:ViewportPointToRay(vector2CursorPosition.x, vector2CursorPosition.y, 0)
-    Utils.logInfo(player.Name .. " ray " .. Utils.toStringRay(rayViewport))
-    rayViewportExtended = Ray.new(rayViewport.Origin, rayViewport.Direction * 100)
-    Utils.visualizeRay(rayViewportExtended)
-    ]]
-
 end
 local onDeactivate = function()
     Utils.logDebug(player.Name .. " deactivated " .. tool.Name)
