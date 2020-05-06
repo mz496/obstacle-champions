@@ -5,7 +5,15 @@ local PlayerToolManager = {}
 PlayerToolManager.grantTool = function(--[[Tool]] tool, --[[Player]] player)
     local playerTool = tool:Clone()
     playerTool.Parent = player.Backpack
-    Utils.logInfo("Granted player " .. player.Name .. " tool " .. tool.Name)
+    for i,c in pairs(playerTool:GetChildren()) do
+        print("in ptm")
+        print(i)
+        print(c)
+    end
+    for i,c in pairs(player.Backpack:GetChildren()) do
+        print(i); print(c)
+    end
+    Utils.logInfo("Granted player " .. player.Name .. " tool " .. playerTool.Name)
 end
 
 PlayerToolManager.removeTool = function(--[[Tool]] tool, --[[Player]] player)

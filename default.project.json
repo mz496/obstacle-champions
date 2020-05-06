@@ -21,8 +21,13 @@
       "$className": "ReplicatedStorage",
 
       "Common": {
-        "$path": "src/shared"
+        "$path": "src/replicatedstorage"
       }
+    },
+
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "$path": "src/replicatedfirst"
     },
 
     "ServerScriptService": {
@@ -31,6 +36,11 @@
       "Server": {
         "$path": "src/server"
       }
+    },
+
+    "StarterPack": {
+      "$className": "StarterPack",
+      "$path": "src/starterpack"
     },
 
     "StarterPlayer": {

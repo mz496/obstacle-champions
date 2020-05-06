@@ -1,5 +1,10 @@
 local Utils = require(game.ReplicatedStorage.Common.Utils)
 local MapLoader = require(game.ReplicatedStorage.Common.MapLoader)
+for i,c in pairs(script.Parent:GetChildren()) do
+    print(i)
+    print(c)
+end
+local Fly = require(script.Parent:WaitForChild("Fly"))
 
 local tool = script.Parent
 local player = game.Players.LocalPlayer
@@ -76,6 +81,8 @@ local renderBoundingBox = --[[void]] function(--[[Vector3]] center)
     boundingBoxIsActive = true
 end
 
+--TODO: make a function that also moves a bounding box
+
 local attemptToDestroyBoundingBox = --[[void]] function()
     if (boundingBoxIsActive == true) then
         boundingBoxIsActive = false
@@ -108,6 +115,7 @@ local onEquip = function(mouse)
         --Utils.visualizeRay(Ray.new(s, t-s))
     end
     mouse.Move:Connect(onMouseMove)
+    Fly.bindListeners()
 end
 local onUnequip = function()
     attemptToDestroyBoundingBox()
