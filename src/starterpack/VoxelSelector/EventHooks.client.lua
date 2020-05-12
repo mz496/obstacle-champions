@@ -15,6 +15,8 @@ local boundedObjectRef = nil
 local worldCoordinatesMouseLocation = nil
 local voxelCenterMouseLocation = nil
 
+local bodyVelocityRef = nil
+
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
     local voxelX = Utils.round(p.X/VOXEL_SIZE) * VOXEL_SIZE
@@ -93,6 +95,7 @@ end
 -- EVENT HOOKS
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
+
     local onMouseMove = function()
         local s = player.Character.HumanoidRootPart.CFrame.p
         local t = mouse.Hit.p
@@ -112,11 +115,16 @@ local onEquip = function(mouse)
         --Utils.visualizeRay(Ray.new(s, t-s))
     end
     mouse.Move:Connect(onMouseMove)
+
+    bodyVelocityRef = Fly.addMover()
     Fly.bindListeners()
 end
 local onUnequip = function()
-    attemptToDestroyBoundingBox()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
+
+    attemptToDestroyBoundingBox()
+
+    Fly.destroyMover(bodyVelocityRef)
 end
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)

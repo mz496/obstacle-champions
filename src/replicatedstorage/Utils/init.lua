@@ -68,6 +68,10 @@ Utils.truncateNumber = --[[string]] function(--[[number]] n)
     return string.sub(tostring(n), 1, decimalPointIndex + decimalPlaces)
 end
 
+Utils.toStringBoolean = --[[string]] function(--[[boolean]] b)
+    if b then return "True" else return "False" end
+end
+
 Utils.toStringVector2 = --[[string]] function(--[[Vector2]] v)
     return "Vector2("..Utils.truncateNumber(v.X)..", "..Utils.truncateNumber(v.Y)..")"
 end
