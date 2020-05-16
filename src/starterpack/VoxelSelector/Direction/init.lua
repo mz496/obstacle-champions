@@ -5,11 +5,12 @@ local Utils = require(game.ReplicatedStorage.Common.Utils)
 local Direction, super = Class.classDefinition(Object)
 Direction._className = "Direction"
 Direction._new = --[[Direction]] function(self,
-        --[[string]] name, --[[Enum.KeyCode]] keyCode, --[[CFrame -> Ray]] rayTransformation)
+        --[[string]] name, --[[Enum.KeyCode]] keyCode, --[[CFrame -> Vector3]] CFrameToUnitDirectionVector3Transformation)
     self = super._new(self)
     self._name = name
     self._keyCode = keyCode
     self._rayTransformation = rayTransformation
+    self._cFrameToUnitDirectionVector3Transformation = CFrameToUnitDirectionVector3Transformation
 
     self._ongoingVelocity = Vector3.new(0,0,0)
     return self
@@ -46,6 +47,9 @@ end
 
 
 
+Direction.getUnitDirectionVector3 = function(self, rootCFrame)
+    return self._cFrameToUnitDirectionVector3Transformation(rootCFrame)
+end
 
 Direction.setOngoingVelocity = --[[void]] function(self, --[[Vector3]] v)
     self._ongoingVelocity = v

@@ -14,6 +14,7 @@ GOALS_MODEL.Parent = game.Workspace.Terrain
 -- Body velocity inserted to player humanoid root part
 -- Should be the same reference for the lifetime of this module
 local FLY_BODY_VELOCITY = nil
+local FLY_BODY_GYRO = nil
 
 -- Connections for bound event listeners
 -- Should be the same references for the lifetime of this module
@@ -22,18 +23,35 @@ local INPUT_ENDED_CONNECTION = nil
 
 local DIRECTIONS = {
     UP=Direction("Up", Enum.KeyCode.Space,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.UpVector * MOVE_DISTANCE) end)),
+        (function(rootCFrame) return rootCFrame.UpVector.Unit end)),
     DOWN=Direction("Down", Enum.KeyCode.LeftShift,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.UpVector * -MOVE_DISTANCE) end)),
+        (function(rootCFrame) return -1 * rootCFrame.UpVector.Unit end)),
     RIGHT=Direction("Right", Enum.KeyCode.D,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.RightVector * MOVE_DISTANCE) end)),
+        (function(rootCFrame) return rootCFrame.RightVector.Unit end)),
     LEFT=Direction("Left", Enum.KeyCode.A,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.RightVector * -MOVE_DISTANCE) end)),
+        (function(rootCFrame) return -1 * rootCFrame.RightVector.Unit end)),
     FORWARD=Direction("Forward", Enum.KeyCode.W,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.LookVector * MOVE_DISTANCE) end)),
+        (function(rootCFrame) return rootCFrame.LookVector.Unit end)),
     BACKWARD=Direction("Backward", Enum.KeyCode.S,
-        (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.LookVector * -MOVE_DISTANCE) end))
+        (function(rootCFrame) return -1 * rootCFrame.LookVector.Unit end))
 }
+
+Fly.addGyro = function()
+    FLY_BODY_GYRO = Instance.new("BodyGyro")
+    FLY_BODY_GYRO.Parent = player.Character.HumanoidRootPart
+    FLY_BODY_GYRO.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    FLY_BODY_GYRO.P = 1e9
+end
+
+Fly.updateGyroTargetCFrame = function(cf)
+    FLY_BODY_GYRO.CFrame = cf
+end
+
+Fly.destroyGyro = function()
+    FLY_BODY_GYRO:Destroy()
+    FLY_BODY_GYRO.Parent = nil
+    FLY_BODY_GYRO = nil
+end
 
 Fly.addMover = function()
     FLY_BODY_VELOCITY = Instance.new("BodyVelocity")
@@ -66,7 +84,8 @@ end
 
 -- Takes the new direction vector and applies it to the
 Fly.adjustTrajectory = function(--[[CFrame]] oldCFrame, --[[CFrame]] newCFrame)
-    local offset = oldCFrame:ToObjectSpace(newCFrame)
+    --local offset = oldCFrame:ToObjectSpace(newCFrame)
+    local offset = oldCFrame:inverse() * newCFrame
 
     for _,dir in pairs(DIRECTIONS) do
         local oldVelocity = dir:getOngoingVelocity()
@@ -75,6 +94,7 @@ Fly.adjustTrajectory = function(--[[CFrame]] oldCFrame, --[[CFrame]] newCFrame)
         local newSpeed = oldVelocity.Magnitude
         if (newSpeed > epsilon) then
             local newDirectionVector3 = (offset * oldVelocity).Unit
+            Utils.placeMarker(player.Character.HumanoidRootPart.Position + oldVelocity, "m", game.Workspace.Terrain)
             local newVelocity = newSpeed * newDirectionVector3
 
             dir:setOngoingVelocity(newVelocity)
@@ -123,7 +143,7 @@ local inputBegan = function(input, gameProcessedEvent)
     for _,dir in pairs(DIRECTIONS) do
         if (input.KeyCode == dir:getKeyCode()) then
             --addMoverVelocity(MOVE_DISTANCE * (dir:getRay(rootCFrame).Direction).Unit)
-            dir:setOngoingVelocity(MOVE_DISTANCE * (dir:getRay(rootCFrame).Direction.Unit))
+            dir:setOngoingVelocity(MOVE_DISTANCE * dir:getUnitDirectionVector3(rootCFrame))--getRay(rootCFrame).Direction.Unit))
             --local goal = placeGoal(dir:getRay(rootCFrame), dir:getName())
             --dir:setGoalRef(goal)
             --[[while (dir:getIsActive()) do
@@ -230,6 +250,18 @@ end
 Fly.unbindListeners = function()
     INPUT_BEGAN_CONNECTION:Disconnect()
     INPUT_ENDED_CONNECTION:Disconnect()
+end
+
+Fly.construct = function()
+    Fly.addMover()
+    Fly.addGyro()
+    Fly.bindListeners()
+end
+
+Fly.deconstruct = function()
+    Fly.destroyMover()
+    Fly.destroyGyro()
+    Fly.unbindListeners()
 end
 
 return Fly

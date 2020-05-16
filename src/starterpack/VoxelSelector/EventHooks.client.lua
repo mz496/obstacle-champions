@@ -95,8 +95,7 @@ local currentFacingCFrame = nil
 -- EVENT HOOKS
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
-    Fly.addMover()
-    Fly.bindListeners()
+    Fly.construct()
 
     local onMouseMove = function()
         local sCFrame = player.Character.HumanoidRootPart.CFrame
@@ -106,6 +105,8 @@ local onEquip = function(mouse)
         local target = mouse.Target
         local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t, target)
 
+        Fly.updateGyroTargetCFrame(tCFrame)
+
         if (currentFacingCFrame == nil) then
             currentFacingCFrame = sCFrame
         else
@@ -113,7 +114,7 @@ local onEquip = function(mouse)
             currentFacingCFrame = sCFrame
         end
 
-        --Utils.visualizeRay(Ray.new(s, t - s))
+        Utils.visualizeRay(Ray.new(s, t - s))
 
         if (currentVoxelCenterMouseLocation ~= voxelCenterMouseLocation) then
             -- This should only happen the first time the tool is equipped
@@ -131,8 +132,7 @@ local onEquip = function(mouse)
 end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
-    Fly.destroyMover()
-    Fly.unbindListeners()
+    Fly.deconstruct()
 
     attemptToDestroyBoundingBox()
 end
