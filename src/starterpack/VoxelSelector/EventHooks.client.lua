@@ -106,13 +106,15 @@ local onEquip = function(mouse)
         local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t, target)
 
         Fly.updateGyroTargetCFrame(tCFrame)
-
+        Fly.adjustTrajectory(sCFrame)
+        --[[
         if (currentFacingCFrame == nil) then
             currentFacingCFrame = sCFrame
         else
             Fly.adjustTrajectory(currentFacingCFrame, sCFrame)
             currentFacingCFrame = sCFrame
         end
+        ]]
 
         Utils.visualizeRay(Ray.new(s, t - s))
 

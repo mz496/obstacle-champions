@@ -82,10 +82,9 @@ local computeNetOngoingVelocity = function()
     Utils.logInfo("NET VELOCITY: "..Utils.toStringVector3(FLY_BODY_VELOCITY.Velocity))
 end
 
--- Takes the new direction vector and applies it to the
-Fly.adjustTrajectory = function(--[[CFrame]] oldCFrame, --[[CFrame]] newCFrame)
+Fly.adjustTrajectory = function(--[[CFrame]] newCFrame)
     --local offset = oldCFrame:ToObjectSpace(newCFrame)
-    local offset = oldCFrame:inverse() * newCFrame
+    --local offset = oldCFrame:inverse() * newCFrame
 
     for _,dir in pairs(DIRECTIONS) do
         local oldVelocity = dir:getOngoingVelocity()
@@ -93,7 +92,8 @@ Fly.adjustTrajectory = function(--[[CFrame]] oldCFrame, --[[CFrame]] newCFrame)
         local epsilon = 1e-5
         local newSpeed = oldVelocity.Magnitude
         if (newSpeed > epsilon) then
-            local newDirectionVector3 = (offset * oldVelocity).Unit
+            --local newDirectionVector3 = (offset * oldVelocity).Unit
+            local newDirectionVector3 = dir:getUnitDirectionVector3(newCFrame)
             Utils.placeMarker(player.Character.HumanoidRootPart.Position + oldVelocity, "m", game.Workspace.Terrain)
             local newVelocity = newSpeed * newDirectionVector3
 
@@ -259,6 +259,9 @@ Fly.construct = function()
 end
 
 Fly.deconstruct = function()
+    for _,dir in pairs(DIRECTIONS) do
+        dir:setOngoingVelocity(Vector3.new(0,0,0))
+    end
     Fly.destroyMover()
     Fly.destroyGyro()
     Fly.unbindListeners()
