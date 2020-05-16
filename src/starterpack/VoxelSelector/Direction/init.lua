@@ -9,19 +9,10 @@ Direction._new = --[[Direction]] function(self,
     self = super._new(self)
     self._name = name
     self._keyCode = keyCode
-    self._rayTransformation = rayTransformation
     self._cFrameToUnitDirectionVector3Transformation = CFrameToUnitDirectionVector3Transformation
 
     self._ongoingVelocity = Vector3.new(0,0,0)
     return self
-end
-
-Direction.setGoalRef = --[[void]] function(self, --[[Part]] goal)
-    self._goalRef = goal
-end
-
-Direction.getGoalRef = --[[Part]] function(self)
-    return self._goalRef
 end
 
 Direction.getName = --[[string]] function(self)
@@ -32,22 +23,7 @@ Direction.getKeyCode = --[[Enum.KeyCode]] function(self)
     return self._keyCode
 end
 
-Direction.getRay = --[[Ray]] function(self, --[[CFrame]] rootCFrame)
-    return self._rayTransformation(rootCFrame)
-end
-
-Direction.setIsActive = --[[void]] function(self, --[[boolean]] isActive)
-    self._isActive = isActive
-end
-
-Direction.getIsActive = --[[void]] function(self)
-    return self._isActive
-end
-
-
-
-
-Direction.getUnitDirectionVector3 = function(self, rootCFrame)
+Direction.getUnitDirectionVector3 = function(self, --[[CFrame]] rootCFrame)
     return self._cFrameToUnitDirectionVector3Transformation(rootCFrame)
 end
 
