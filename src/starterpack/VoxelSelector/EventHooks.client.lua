@@ -15,8 +15,6 @@ local boundedObjectRef = nil
 local worldCoordinatesMouseLocation = nil
 local voxelCenterMouseLocation = nil
 
-local bodyVelocityRef = nil
-
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
     local voxelX = Utils.round(p.X/VOXEL_SIZE) * VOXEL_SIZE
@@ -116,7 +114,7 @@ local onEquip = function(mouse)
     end
     mouse.Move:Connect(onMouseMove)
 
-    bodyVelocityRef = Fly.addMover()
+    Fly.addMover()
     Fly.bindListeners()
 end
 local onUnequip = function()
@@ -124,7 +122,7 @@ local onUnequip = function()
 
     attemptToDestroyBoundingBox()
 
-    Fly.destroyMover(bodyVelocityRef)
+    Fly.destroyMover()
 end
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)

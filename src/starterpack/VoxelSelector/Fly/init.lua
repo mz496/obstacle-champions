@@ -11,6 +11,9 @@ local GOALS_MODEL = Instance.new("Model")
 GOALS_MODEL.Name = "Goals"
 GOALS_MODEL.Parent = game.Workspace.Terrain
 
+-- Body velocity inserted to player humanoid root part
+local bodyVelocityRef = nil
+
 local DIRECTIONS = {
     UP=Direction("Up", Enum.KeyCode.Space,
         (function(rootCFrame) return Ray.new(rootCFrame.p, rootCFrame.UpVector * MOVE_DISTANCE) end)),
@@ -27,7 +30,7 @@ local DIRECTIONS = {
 }
 
 Fly.addMover = function()
-    local bodyVelocityRef = Instance.new("BodyVelocity")
+    bodyVelocityRef = Instance.new("BodyVelocity")
     bodyVelocityRef.Parent = player.Character.HumanoidRootPart
     bodyVelocityRef.Name = "Mover"
     bodyVelocityRef.Velocity = Vector3.new(0,0,0)
@@ -43,9 +46,9 @@ local addMoverVelocity = function(--[[Vector3]] v)
     mover.Velocity = mover.Velocity + v
 end
 
-Fly.destroyMover = function(ref)
-    ref:Destroy()
-    ref.Parent = nil
+Fly.destroyMover = function()
+    bodyVelocityRef:Destroy()
+    bodyVelocityRef.Parent = nil
 end
 
 local getGoalName = --[[string]] function(--[[string]] direction)
