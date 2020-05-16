@@ -11,8 +11,7 @@ Direction._new = --[[Direction]] function(self,
     self._keyCode = keyCode
     self._rayTransformation = rayTransformation
 
-    self._goalRef = nil
-    self._isActive = false
+    self._ongoingVelocity = Vector3.new(0,0,0)
     return self
 end
 
@@ -42,6 +41,18 @@ end
 
 Direction.getIsActive = --[[void]] function(self)
     return self._isActive
+end
+
+
+
+
+
+Direction.setOngoingVelocity = --[[void]] function(self, --[[Vector3]] v)
+    self._ongoingVelocity = v
+end
+
+Direction.getOngoingVelocity = --[[Vector3]] function(self)
+    return self._ongoingVelocity
 end
 
 return Direction

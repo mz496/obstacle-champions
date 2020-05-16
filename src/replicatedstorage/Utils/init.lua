@@ -53,11 +53,16 @@ Utils.round = --[[number]] function(--[[number]] n)
 end
 
 Utils.truncateNumber = --[[string]] function(--[[number]] n)
-    if (n == 0) then
-        return "0"
+    if (n ~= n) then
+        return "nan"
     end
-    if (n == math.floor(n)) then
-        return tostring(n)
+
+    epsilon = 1e-5
+    if (math.abs(n) < epsilon) then
+        return "~ 0"
+    end
+    if (math.abs(n - math.floor(n)) < epsilon) then
+        return "~ "..tostring(n)
     end
     -- This is one-indexed
     local decimalPointIndex = 2 + math.floor(math.log10(math.abs(n)))
@@ -65,7 +70,12 @@ Utils.truncateNumber = --[[string]] function(--[[number]] n)
     if (n < 0) then
         decimalPointIndex = decimalPointIndex + 1
     end
-    return string.sub(tostring(n), 1, decimalPointIndex + decimalPlaces)
+    local result = string.sub(tostring(n), 1, decimalPointIndex + decimalPlaces)
+    if (string.len(result) == 1) then
+        return tostring(n)
+    else
+        return result
+    end
 end
 
 Utils.toStringBoolean = --[[string]] function(--[[boolean]] b)
@@ -77,7 +87,11 @@ Utils.toStringVector2 = --[[string]] function(--[[Vector2]] v)
 end
 
 Utils.toStringVector3 = --[[string]] function(--[[Vector3]] v)
-    return "Vector3("..Utils.truncateNumber(v.X)..", "..Utils.truncateNumber(v.Y)..", "..Utils.truncateNumber(v.Z)..")"
+    return "Vector3("
+        ..Utils.truncateNumber(v.X)..
+        ", "..Utils.truncateNumber(v.Y)..
+        ", "..Utils.truncateNumber(v.Z)..
+        "; mag="..Utils.truncateNumber(v.Magnitude)..")"
 end
 
 Utils.toStringRay = --[[string]] function(--[[Ray]] r)

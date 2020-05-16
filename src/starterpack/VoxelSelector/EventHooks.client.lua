@@ -25,7 +25,7 @@ end
 
 -- Returns the center of the farthest observed voxel along a vector from s to t
 -- Take a point along the s-t vector almost at t but just a bit toward s and find its corresponding voxel
-local getFarthestVisibleVoxelCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Object]] target)
+local getFarthestVisibleVoxelCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
     local epsilon = nil
     if (target ~= nil and target.Parent == boundedObjectRef) then
         epsilon = -0.001
@@ -90,39 +90,51 @@ local attemptToDestroyBoundingBox = --[[void]] function()
     end
 end
 
+local currentFacingCFrame = nil
+
 -- EVENT HOOKS
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
+    Fly.addMover()
+    Fly.bindListeners()
 
     local onMouseMove = function()
-        local s = player.Character.HumanoidRootPart.CFrame.p
-        local t = mouse.Hit.p
+        local sCFrame = player.Character.HumanoidRootPart.CFrame
+        local tCFrame = mouse.Hit
+        local s = sCFrame.p
+        local t = tCFrame.p
         local target = mouse.Target
-        worldCoordinatesMouseLocation = t
         local currentVoxelCenterMouseLocation = getFarthestVisibleVoxelCenter(s, t, target)
+
+        if (currentFacingCFrame == nil) then
+            currentFacingCFrame = sCFrame
+        else
+            Fly.adjustTrajectory(currentFacingCFrame, sCFrame)
+            currentFacingCFrame = sCFrame
+        end
+
+        --Utils.visualizeRay(Ray.new(s, t - s))
+
         if (currentVoxelCenterMouseLocation ~= voxelCenterMouseLocation) then
             -- This should only happen the first time the tool is equipped
             attemptToDestroyBoundingBox()
             renderBoundingBox(currentVoxelCenterMouseLocation)
             --Utils.visualizeRay(Ray.new(s, worldCoordinatesMouseLocation - s))
             voxelCenterMouseLocation = currentVoxelCenterMouseLocation
-            Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(voxelCenterMouseLocation))
+            --Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(voxelCenterMouseLocation))
         end
         --renderBoundingBox(getFarthestVisibleVoxelCenter(s, t))
         --Utils.placeMarker(getFarthestVisibleVoxelCenter(s, t), "n", game.Workspace.Terrain)
         --Utils.visualizeRay(Ray.new(s, t-s))
     end
     mouse.Move:Connect(onMouseMove)
-
-    Fly.addMover()
-    Fly.bindListeners()
 end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
+    Fly.destroyMover()
+    Fly.unbindListeners()
 
     attemptToDestroyBoundingBox()
-
-    Fly.destroyMover()
 end
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)
