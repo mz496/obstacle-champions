@@ -23,6 +23,9 @@
       "Scripts": {
         "$path": "src/replicatedstorage/scripts"
       },
+      "Models": {
+        "$path": "src/replicatedstorage/models"
+      },
       "Remote": {
         "$path": "src/replicatedstorage/remote"
       }

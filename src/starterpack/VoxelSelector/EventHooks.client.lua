@@ -74,7 +74,7 @@ local renderBoundingBox = --[[void]] function(--[[Vector3]] center)
     Utils.placeBeam(p3, p7, "e37", color, box)
     Utils.placeBeam(p4, p8, "e48", color, box)
 
-    boundedObjectRef = MapLoader.loadMap(game.Workspace.TestObstacle, CFrame.new(center))
+    boundedObjectRef = MapLoader.loadMap(game.ReplicatedStorage.Models.Obstacle_Test, CFrame.new(center))
     boundingBoxIsActive = true
 end
 
