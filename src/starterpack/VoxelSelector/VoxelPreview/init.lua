@@ -5,7 +5,6 @@ local VoxelPreview = {}
 -- Places voxels' center coordinates at multiples of VOXEL_SIZE
 local VOXEL_SIZE = 10
 
-local boundingBoxIsActive = false
 local boundingBoxRef = nil
 local boundedObjectRef = nil
 local worldCoordinatesMouseLocation = nil
@@ -69,17 +68,27 @@ local renderBoundingBox = --[[void]] function(--[[Vector3]] center)
     Utils.placeBeam(p4, p8, "e48", color, box)
 
     boundedObjectRef = MapLoader.loadMap(game.ReplicatedStorage.Models.Obstacle_Test, CFrame.new(center))
-    boundingBoxIsActive = true
 end
 
 local attemptToDestroyBoundingBox = --[[void]] function()
-    if (boundingBoxIsActive == true) then
-        boundingBoxIsActive = false
+    if (boundingBoxRef ~= nil) then
         boundingBoxRef:Destroy()
         boundingBoxRef.Parent = nil
+        boundingBoxRef = nil
+    end
+    if (boundedObjectRef ~= nil) then
         boundedObjectRef:Destroy()
         boundedObjectRef.Parent = nil
+        boundedObjectRef = nil
     end
+end
+
+VoxelPreview.isActive = --[[boolean]] function()
+    return boundedObjectRef ~= nil
+end
+
+VoxelPreview.getSelectedCFrame = --[[CFrame]] function()
+    return boundedObjectRef.PrimaryPart.CFrame
 end
 
 VoxelPreview.renderPreview = --[[void]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] targetPart)
@@ -94,8 +103,12 @@ VoxelPreview.renderPreview = --[[void]] function(--[[Vector3]] s, --[[Vector3]] 
     end
 end
 
-VoxelPreview.deconstruct = --[[void]] function()
+VoxelPreview.clearPreview = --[[void]] function()
     attemptToDestroyBoundingBox()
+end
+
+VoxelPreview.deconstruct = --[[void]] function()
+    VoxelPreview.clearPreview()
 end
 
 return VoxelPreview

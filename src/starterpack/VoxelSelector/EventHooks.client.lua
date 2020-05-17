@@ -26,13 +26,17 @@ end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
     Fly.deconstruct()
-
     VoxelPreview.deconstruct()
 end
 
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)
-
+    if (VoxelPreview.isActive()) then
+        game.ReplicatedStorage.Remote.Function_PlaceObstacle:InvokeServer(VoxelPreview.getSelectedCFrame())
+        VoxelPreview.clearPreview()
+    else
+        Utils.logInfo(player.Name .. " activated tool but preview was not active")
+    end
 end
 local onDeactivate = function()
     Utils.logDebug(player.Name .. " deactivated " .. tool.Name)

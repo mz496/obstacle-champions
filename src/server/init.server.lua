@@ -12,5 +12,9 @@ TestEZ.TestBootstrap:run(tests, nil, nil)
 MapLoader.loadMap(game.Workspace.Pile, CFrame.new(Vector3.new(0, 10, 0)))
 Utils.logInfo("Loaded map!")
 
-local me = game.Players:WaitForChild("LEG0builder")
-Utils.logInfo("Server saw that "..me.Name.." joined")
+local onClientPlaceObstacle = function(player, --[[CFrame]] obstacleCFrame)
+    print(player.Name.."placed obstacle at "..Utils.toStringVector3(obstacleCFrame.p))
+    MapLoader.loadMap(game.ReplicatedStorage.Models.Obstacle_Test, obstacleCFrame)
+    return true
+end
+game.ReplicatedStorage.Remote.Function_PlaceObstacle.OnServerInvoke = onClientPlaceObstacle
