@@ -23,7 +23,7 @@ Direction.getKeyCode = --[[Enum.KeyCode]] function(self)
     return self._keyCode
 end
 
-Direction.getUnitDirectionVector3 = function(self, --[[CFrame]] rootCFrame)
+Direction.getUnitDirectionVector3 = --[[Vector3]] function(self, --[[CFrame]] rootCFrame)
     return self._cFrameToUnitDirectionVector3Transformation(rootCFrame)
 end
 

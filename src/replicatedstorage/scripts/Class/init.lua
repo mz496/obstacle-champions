@@ -4,6 +4,7 @@ local Class = {}
 local _newInstance = function(methodTable_classT, ...)
     -- Creates a completely new object and shallow-copies all functions from methodTable_classT into it
     -- Allows metamethods to be defined directly in the class because they will be copied into the metatable
+    -- TODO: "loop in gettable" when null members are created in constructor
 
     local methodTable_instanceT = {}
     local methodTable_metatableInstanceT = {}
@@ -62,4 +63,3 @@ Class.classDefinition --[[<T,U extends Object>]] = function(--[[U]] methodTable_
 end
 
 return Class
-

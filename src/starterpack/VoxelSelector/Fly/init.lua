@@ -121,6 +121,7 @@ Fly.updateGyroTargetCFrame = function(--[[CFrame]] newCFrame)
     FLY_BODY_GYRO.CFrame = newCFrame
 end
 
+-- TODO: Sometimes slight motion even when no keys are held
 Fly.updateTrajectory = function(--[[CFrame]] newCFrame)
     for _,dir in pairs(DIRECTIONS) do
         local oldVelocity = dir:getOngoingVelocity()
@@ -129,11 +130,8 @@ Fly.updateTrajectory = function(--[[CFrame]] newCFrame)
         local newSpeed = oldVelocity.Magnitude
         if (newSpeed > epsilon) then
             local newDirectionVector3 = dir:getUnitDirectionVector3(newCFrame)
-            Utils.placeMarker(player.Character.HumanoidRootPart.Position + oldVelocity, "m", game.Workspace.Terrain)
             local newVelocity = newSpeed * newDirectionVector3
-
             dir:setOngoingVelocity(newVelocity)
-            Utils.logInfo("DIR "..dir:getName().."'s new velocity is "..Utils.toStringVector3(newVelocity))
         end
     end
     computeNetOngoingVelocity()
