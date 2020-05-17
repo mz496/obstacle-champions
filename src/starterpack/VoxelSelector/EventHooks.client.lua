@@ -1,5 +1,5 @@
-local Utils = require(game.ReplicatedStorage.Common.Utils)
-local MapLoader = require(game.ReplicatedStorage.Common.MapLoader)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
+local MapLoader = require(game.ReplicatedStorage.Scripts.MapLoader)
 -- Other scripts in this tool may not have replicated yet?
 local Fly = require(script.Parent:WaitForChild("Fly"))
 

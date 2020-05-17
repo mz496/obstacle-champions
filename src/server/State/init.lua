@@ -1,6 +1,6 @@
-local Object = require(game.ReplicatedStorage.Common.Object)
-local Class = require(game.ReplicatedStorage.Common.Class)
-local Utils = require(game.ReplicatedStorage.Common.Utils)
+local Object = require(game.ReplicatedStorage.Scripts.Object)
+local Class = require(game.ReplicatedStorage.Scripts.Class)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 
 local State, super = Class.classDefinition(Object)
 State._className = "State"
@@ -29,4 +29,3 @@ State.__eq = --[[boolean]] function(self, --[[State]] op1, --[[State]] op2)
 end
 
 return State
-

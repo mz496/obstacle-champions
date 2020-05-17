@@ -1,4 +1,4 @@
-local Utils = require(game.ReplicatedStorage.Common.Utils)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 
 local PlayerToolManager = {}
 

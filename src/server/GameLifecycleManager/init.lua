@@ -8,7 +8,7 @@ require(game.ServerScriptService.Server.StateTransition)
 local StateTransitionTable =
 require(game.ServerScriptService.Server.StateTransitionTable)
 local Utils =
-require(game.ReplicatedStorage.Common.Utils)
+require(game.ReplicatedStorage.Scripts.Utils)
 local GameLifecycleConstants =
 require(game.ServerScriptService.Server.Constants.GameLifecycle)
 local States = GameLifecycleConstants.States

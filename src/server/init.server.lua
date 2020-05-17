@@ -1,8 +1,8 @@
 print("Hello world, from server!")
 
-local TestEZ = require(game.ReplicatedStorage.Common.TestEZ)
-local Utils = require(game.ReplicatedStorage.Common.Utils)
-local MapLoader = require(game.ReplicatedStorage.Common.MapLoader)
+local TestEZ = require(game.ReplicatedStorage.Scripts.TestEZ)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
+local MapLoader = require(game.ReplicatedStorage.Scripts.MapLoader)
 local PlayerToolManager = require(game.ServerStorage.Scripts.PlayerToolManager)
 local ServerAdmin = require(game.ServerStorage.Scripts.ServerAdmin)
 

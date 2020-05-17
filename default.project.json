@@ -20,8 +20,11 @@
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
 
-      "Common": {
-        "$path": "src/replicatedstorage"
+      "Scripts": {
+        "$path": "src/replicatedstorage/scripts"
+      },
+      "Remote": {
+        "$path": "src/replicatedstorage/remote"
       }
     },
 

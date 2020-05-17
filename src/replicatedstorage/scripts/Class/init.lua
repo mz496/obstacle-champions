@@ -1,4 +1,4 @@
-local Utils = require(game.ReplicatedStorage.Common.Utils)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local Class = {}
 
 local _newInstance = function(methodTable_classT, ...)

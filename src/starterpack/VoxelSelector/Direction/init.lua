@@ -1,6 +1,6 @@
-local Object = require(game.ReplicatedStorage.Common.Object)
-local Class = require(game.ReplicatedStorage.Common.Class)
-local Utils = require(game.ReplicatedStorage.Common.Utils)
+local Object = require(game.ReplicatedStorage.Scripts.Object)
+local Class = require(game.ReplicatedStorage.Scripts.Class)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 
 local Direction, super = Class.classDefinition(Object)
 Direction._className = "Direction"
