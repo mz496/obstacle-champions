@@ -1,7 +1,7 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 -- Other scripts in this tool may not have replicated yet?
 local Fly = require(script.Parent:WaitForChild("Fly"))
-local VoxelPreview = require(script.Parent:WaitForChild("VoxelPreview"))
+local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
 
 local tool = script.Parent
 local player = game.Players.LocalPlayer
@@ -19,21 +19,21 @@ local onEquip = function(mouse)
         Fly.updateGyroTargetCFrame(tCFrame)
         Fly.updateTrajectory(sCFrame)
         --Utils.visualizeRay(Ray.new(s, t - s))
-        VoxelPreview.renderPreview(s, t, mouse.Target)
+        ModelPreview.renderPreview(s, t, mouse.Target)
     end
     mouse.Move:Connect(onMouseMove)
 end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
     Fly.deconstruct()
-    VoxelPreview.deconstruct()
+    ModelPreview.clearPreview()
 end
 
 local onActivate = function()
     Utils.logDebug(player.Name .. " activated " .. tool.Name)
-    if (VoxelPreview.isActive()) then
-        game.ReplicatedStorage.Remote.Function_PlaceObstacle:InvokeServer(VoxelPreview.getSelectedCFrame())
-        VoxelPreview.clearPreview()
+    if (ModelPreview.isActive()) then
+        game.ReplicatedStorage.Remote.Function_PlaceObstacle:InvokeServer(ModelPreview.getSelectedCFrame())
+        ModelPreview.clearPreview()
     else
         Utils.logInfo(player.Name .. " activated tool but preview was not active")
     end
