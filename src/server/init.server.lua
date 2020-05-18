@@ -4,7 +4,6 @@ local TestEZ = require(game.ReplicatedStorage.Scripts.TestEZ)
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local ModelLoader = require(game.ReplicatedStorage.Scripts.ModelLoader)
 local PlayerToolManager = require(game.ServerStorage.Scripts.PlayerToolManager)
-local ServerAdmin = require(game.ServerStorage.Scripts.ServerAdmin)
 
 tests = {game.ServerScriptService.Server}
 TestEZ.TestBootstrap:run(tests, nil, nil)
@@ -18,3 +17,10 @@ local onClientPlaceObstacle = function(player, --[[CFrame]] obstacleCFrame)
     return true
 end
 game.ReplicatedStorage.Remote.Function_PlaceObstacle.OnServerInvoke = onClientPlaceObstacle
+
+--[[
+local s = require(game.ServerStorage.Scripts.ServerAdmin)
+
+s.grantVoxelSelector(game.Players.LEG0builder)
+s.removeVoxelSelector(game.Players.LEG0builder)
+]]
