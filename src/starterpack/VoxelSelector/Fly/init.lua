@@ -2,7 +2,6 @@ local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local Direction = require(script.Parent.Direction)
 local Fly = {}
 
-local UserInputService = game:GetService("UserInputService")
 local player = game.Players.LocalPlayer
 
 -- The velocity to float in a direction when a button is pressed
@@ -12,28 +11,18 @@ local MOVE_VELOCITY = 20
 local FLY_BODY_VELOCITY = nil
 local FLY_BODY_GYRO = nil
 
--- Connection instances for bound event listeners
-local INPUT_BEGAN_CONNECTION = nil
-local INPUT_ENDED_CONNECTION = nil
-
-local DIRECTIONS = {
-    UP=Direction("Up",
-        Enum.KeyCode.Space,
+Fly.INPUTS = {
+    [Enum.KeyCode.Space.Name] = Direction("Up",
         (function(rootCFrame) return rootCFrame.UpVector.Unit end)),
-    DOWN=Direction("Down",
-        Enum.KeyCode.LeftShift,
+    [Enum.KeyCode.LeftShift.Name] = Direction("Down",
         (function(rootCFrame) return -1 * rootCFrame.UpVector.Unit end)),
-    RIGHT=Direction("Right",
-        Enum.KeyCode.D,
+    [Enum.KeyCode.D.Name] = Direction("Right",
         (function(rootCFrame) return rootCFrame.RightVector.Unit end)),
-    LEFT=Direction("Left",
-        Enum.KeyCode.A,
+    [Enum.KeyCode.A.Name] = Direction("Left",
         (function(rootCFrame) return -1 * rootCFrame.RightVector.Unit end)),
-    FORWARD=Direction("Forward",
-        Enum.KeyCode.W,
+    [Enum.KeyCode.W.Name] = Direction("Forward",
         (function(rootCFrame) return rootCFrame.LookVector.Unit end)),
-    BACKWARD=Direction("Backward",
-        Enum.KeyCode.S,
+    [Enum.KeyCode.S.Name] = Direction("Backward",
         (function(rootCFrame) return -1 * rootCFrame.LookVector.Unit end))
 }
 
@@ -72,49 +61,24 @@ end
 
 local computeNetOngoingVelocity = function()
     local netOngoingVelocity = Vector3.new(0,0,0)
-    for _,dir in pairs(DIRECTIONS) do
+    for _,dir in pairs(Fly.INPUTS) do
         netOngoingVelocity = netOngoingVelocity + dir:getOngoingVelocity()
     end
     FLY_BODY_VELOCITY.Velocity = netOngoingVelocity
     Utils.logInfo("NET VELOCITY: "..Utils.toStringVector3(FLY_BODY_VELOCITY.Velocity))
 end
 
-local inputBegan = function(input, gameProcessedEvent)
+Fly.inputBegan = function(input, gameProcessedEvent)
     local rootCFrame = player.Character.HumanoidRootPart.CFrame
-    for _,dir in pairs(DIRECTIONS) do
-        if (input.KeyCode == dir:getKeyCode()) then
-            dir:setOngoingVelocity(MOVE_VELOCITY * dir:getUnitDirectionVector3(rootCFrame))
-        end
-    end
+    local directionObject = Fly.INPUTS[input.KeyCode.Name]
+    directionObject:setOngoingVelocity(MOVE_VELOCITY * directionObject:getUnitDirectionVector3(rootCFrame))
     computeNetOngoingVelocity()
-
-    if gameProcessedEvent then
-        Utils.logDebug("The game engine internally observed this input")
-    end
 end
 
-local inputEnded = function(input, gameProcessedEvent)
+Fly.inputEnded = function(input, gameProcessedEvent)
     local rootCFrame = player.Character.HumanoidRootPart.CFrame
-    for _,dir in pairs(DIRECTIONS) do
-        if (input.KeyCode == dir:getKeyCode()) then
-            dir:setOngoingVelocity(Vector3.new(0,0,0))
-        end
-    end
+    Fly.INPUTS[input.KeyCode.Name]:setOngoingVelocity(Vector3.new(0,0,0))
     computeNetOngoingVelocity()
-
-    if gameProcessedEvent then
-        Utils.logDebug("The game engine internally observed this input")
-    end
-end
-
-local bindListeners = function()
-    INPUT_BEGAN_CONNECTION = UserInputService.InputBegan:Connect(inputBegan)
-    INPUT_ENDED_CONNECTION = UserInputService.InputEnded:Connect(inputEnded)
-end
-
-local unbindListeners = function()
-    INPUT_BEGAN_CONNECTION:Disconnect()
-    INPUT_ENDED_CONNECTION:Disconnect()
 end
 
 Fly.updateGyroTargetCFrame = function(--[[CFrame]] newCFrame)
@@ -123,7 +87,7 @@ end
 
 -- TODO: Sometimes slight motion even when no keys are held
 Fly.updateTrajectory = function(--[[CFrame]] newCFrame)
-    for _,dir in pairs(DIRECTIONS) do
+    for _,dir in pairs(Fly.INPUTS) do
         local oldVelocity = dir:getOngoingVelocity()
         -- Retain speed i.e. magnitude of the ray, but adjust direction
         local epsilon = 1e-5
@@ -140,16 +104,14 @@ end
 Fly.construct = function()
     addMover()
     addGyro()
-    bindListeners()
 end
 
 Fly.deconstruct = function()
-    for _,dir in pairs(DIRECTIONS) do
+    for _,dir in pairs(Fly.INPUTS) do
         dir:setOngoingVelocity(Vector3.new(0,0,0))
     end
     destroyMover()
     destroyGyro()
-    unbindListeners()
 end
 
 return Fly

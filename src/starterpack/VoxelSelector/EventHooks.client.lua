@@ -1,6 +1,8 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 -- Other scripts in this tool may not have replicated yet?
+local InputRouter = require(script.Parent:WaitForChild("InputRouter"))
 local Fly = require(script.Parent:WaitForChild("Fly"))
+--local Rotate = require(script.Parent:WaitForChild("Rotate"))
 local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
 
 local tool = script.Parent
@@ -8,7 +10,9 @@ local player = game.Players.LocalPlayer
 
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
+    InputRouter.bindListeners()
     Fly.construct()
+    --Rotate.construct()
 
     local onMouseMove = function()
         local sCFrame = player.Character.HumanoidRootPart.CFrame
@@ -25,7 +29,9 @@ local onEquip = function(mouse)
 end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
+    InputRouter.unbindListeners()
     Fly.deconstruct()
+    --Rotate.deconstruct()
     ModelPreview.clearPreview()
 end
 

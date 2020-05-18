@@ -83,7 +83,7 @@ local initializePreview = --[[void]] function(--[[CFrame]] goalCFrame, --[[Model
     MODEL_BOUNDED_OBJECT = ModelLoader.loadModel(modelToPreview, goalCFrame)
 end
 
-local updatePreview = --[[void]] function(--[[CFrame]] newCFrame)
+ModelPreview.updatePreview = --[[void]] function(--[[CFrame]] newCFrame)
     MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(newCFrame)
     MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(newCFrame)
 end
@@ -106,7 +106,7 @@ ModelPreview.renderPreview = --[[void]] function(--[[Vector3]] s, --[[Vector3]] 
         if (not ModelPreview.isActive()) then
             initializePreview(previewCFrame, MODEL_TO_PREVIEW)
         else
-            updatePreview(previewCFrame)
+            ModelPreview.updatePreview(previewCFrame)
         end
         VECTOR3_PREVIEW_CENTER = currentPreviewCenter
         Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(VECTOR3_PREVIEW_CENTER))
