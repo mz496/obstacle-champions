@@ -11,6 +11,9 @@ local MODEL_BOUNDING_BOX = nil
 local MODEL_BOUNDED_OBJECT = nil
 local VECTOR3_PREVIEW_CENTER = nil
 
+-- Contains the angle rotation only for the preview, so that when moving around the preview, the rotation angle doesn't change
+local _cFrameOnlyCurrentAngles = nil
+
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
     local voxelX = Utils.round(p.X/VOXEL_SIZE) * VOXEL_SIZE
@@ -32,7 +35,7 @@ local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t
 end
 
 -- Initialize preview, where the model to preview's primary part is centered around goal CFrame
-local initializePreview = --[[void]] function(--[[CFrame]] goalCFrame, --[[Model]] modelToPreview)
+local initializePreview = --[[void]] function(--[[Vector3]] center, --[[Model]] modelToPreview)
     --[[ Viewed from the top front:
     21
     34
@@ -40,7 +43,6 @@ local initializePreview = --[[void]] function(--[[CFrame]] goalCFrame, --[[Model
     65
     78
     ]]
-    local center = goalCFrame.p
     local p1 = center + Vector3.new(VOXEL_SIZE/2, VOXEL_SIZE/2, VOXEL_SIZE/2)
     local p2 = p1 + Vector3.new(-VOXEL_SIZE, 0, 0)
     local p3 = p2 + Vector3.new(0, 0, -VOXEL_SIZE)
@@ -59,7 +61,7 @@ local initializePreview = --[[void]] function(--[[CFrame]] goalCFrame, --[[Model
     anchor.Name = "Anchor"
     anchor.Parent = MODEL_BOUNDING_BOX
     anchor.Size = Vector3.new(1,1,1)
-    anchor.CFrame = goalCFrame
+    anchor.Position = center
     anchor.CanCollide = false
     anchor.Anchored = true
     anchor.Transparency = 1
@@ -80,33 +82,32 @@ local initializePreview = --[[void]] function(--[[CFrame]] goalCFrame, --[[Model
     Utils.placeBeam(p3, p7, "e37", color, MODEL_BOUNDING_BOX)
     Utils.placeBeam(p4, p8, "e48", color, MODEL_BOUNDING_BOX)
 
-    MODEL_BOUNDED_OBJECT = ModelLoader.loadModel(modelToPreview, goalCFrame)
+    MODEL_BOUNDED_OBJECT = ModelLoader.loadModel(modelToPreview, CFrame.new(center))
+    _cFrameOnlyCurrentAngles = CFrame.Angles(0, 0, 0)
 end
 
-ModelPreview.updatePreview = --[[void]] function(--[[CFrame]] newCFrame)
+ModelPreview.getPreviewCFrame = --[[CFrame]] function()
+    return MODEL_BOUNDED_OBJECT.PrimaryPart.CFrame
+end
+
+ModelPreview.setPreviewCFrame = --[[void]] function(--[[CFrame]] newCFrame)
     MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(newCFrame)
     MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(newCFrame)
+    _cFrameOnlyCurrentAngles = newCFrame - newCFrame.p
 end
 
 ModelPreview.isActive = --[[boolean]] function()
     return MODEL_BOUNDED_OBJECT ~= nil
 end
 
-ModelPreview.getSelectedCFrame = --[[CFrame]] function()
-    return MODEL_BOUNDED_OBJECT.PrimaryPart.CFrame
-end
-
 ModelPreview.renderPreview = --[[void]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] targetPart)
     local currentPreviewCenter = getPreviewCenter(s, t, targetPart)
     if (currentPreviewCenter ~= VECTOR3_PREVIEW_CENTER) then
-        -- CFrame of the preview is the CFrame of its primary part
-        -- Rotation matrix should be identity, but the position can be anything
-        local previewCFrame = MODEL_TO_PREVIEW.PrimaryPart.CFrame + (-MODEL_TO_PREVIEW.PrimaryPart.CFrame.p + currentPreviewCenter)
         -- This should only happen once, when the tool is equipped
         if (not ModelPreview.isActive()) then
-            initializePreview(previewCFrame, MODEL_TO_PREVIEW)
+            initializePreview(currentPreviewCenter, MODEL_TO_PREVIEW)
         else
-            ModelPreview.updatePreview(previewCFrame)
+            ModelPreview.setPreviewCFrame(CFrame.new(currentPreviewCenter) * _cFrameOnlyCurrentAngles, MODEL_TO_PREVIEW)
         end
         VECTOR3_PREVIEW_CENTER = currentPreviewCenter
         Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(VECTOR3_PREVIEW_CENTER))

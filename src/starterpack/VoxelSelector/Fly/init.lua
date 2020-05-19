@@ -1,5 +1,5 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local Direction = require(script.Parent.Direction)
+local FlyDirection = require(script.Parent.FlyDirection)
 local Fly = {}
 
 local player = game.Players.LocalPlayer
@@ -12,17 +12,17 @@ local FLY_BODY_VELOCITY = nil
 local FLY_BODY_GYRO = nil
 
 Fly.INPUTS = {
-    [Enum.KeyCode.Space.Name] = Direction("Up",
+    [Enum.KeyCode.Space.Name] = FlyDirection("Up",
         (function(rootCFrame) return rootCFrame.UpVector.Unit end)),
-    [Enum.KeyCode.LeftShift.Name] = Direction("Down",
+    [Enum.KeyCode.LeftShift.Name] = FlyDirection("Down",
         (function(rootCFrame) return -1 * rootCFrame.UpVector.Unit end)),
-    [Enum.KeyCode.D.Name] = Direction("Right",
+    [Enum.KeyCode.D.Name] = FlyDirection("Right",
         (function(rootCFrame) return rootCFrame.RightVector.Unit end)),
-    [Enum.KeyCode.A.Name] = Direction("Left",
+    [Enum.KeyCode.A.Name] = FlyDirection("Left",
         (function(rootCFrame) return -1 * rootCFrame.RightVector.Unit end)),
-    [Enum.KeyCode.W.Name] = Direction("Forward",
+    [Enum.KeyCode.W.Name] = FlyDirection("Forward",
         (function(rootCFrame) return rootCFrame.LookVector.Unit end)),
-    [Enum.KeyCode.S.Name] = Direction("Backward",
+    [Enum.KeyCode.S.Name] = FlyDirection("Backward",
         (function(rootCFrame) return -1 * rootCFrame.LookVector.Unit end))
 }
 

@@ -1,40 +1,58 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
+local ModelPreview = require(script.Parent.ModelPreview)
+local RotateDirection = require(script.Parent.RotateDirection)
 local Rotate = {}
 
 Rotate.INPUTS = {
-    [Enum.KeyCode.Q.Name] = 0,
+    [Enum.KeyCode.Q.Name] = RotateDirection("AnticlockwiseAboutY",
+        CFrame.Angles(0, math.rad(90), 0)),
+    [Enum.KeyCode.E.Name] = RotateDirection("ClockwiseAboutY",
+        CFrame.Angles(0, math.rad(-90), 0)),
+    [Enum.KeyCode.R.Name] = RotateDirection("AnticlockwiseAboutX",
+        CFrame.Angles(math.rad(90), 0, 0)),
+    [Enum.KeyCode.F.Name] = RotateDirection("ClockwiseAboutX",
+        CFrame.Angles(math.rad(-90), 0, 0)),
+    [Enum.KeyCode.T.Name] = RotateDirection("AnticlockwiseAboutZ",
+        CFrame.Angles(0, 0, math.rad(90))),
+    [Enum.KeyCode.G.Name] = RotateDirection("ClockwiseAboutZ",
+        CFrame.Angles(0, 0, math.rad(-90))),
+    [Enum.KeyCode.X.Name] = RotateDirection("Placeholder",
+        CFrame.Angles(0, 0, 0)),
 }
 
--- Like Z axis in right-handed coordinates
-Rotate.rotateAboutUp = function(rad)
-    return
-end
-
--- Like Y axis in right-handed coordinates
-Rotate.rotateAboutLook = function(rad)
-    return
-end
-
--- Like X axis in right-handed coordinates
-Rotate.rotateAboutRight = function(rad)
-    return
-end
-
 Rotate.inputBegan = function(input, gameProcessedEvent)
-    return
+    local rotateDirectionObject = Rotate.INPUTS[input.KeyCode.Name]
+    if (not rotateDirectionObject:getIsActive()) then
+        Utils.logDebug("Rotate discarding routed input " .. input.KeyCode.Name .. " because the rotation direction is not active")
+        return
+    end
+    Utils.logDebug("Applying rotation direction: " .. rotateDirectionObject:getName())
+    ModelPreview.setPreviewCFrame(ModelPreview.getPreviewCFrame() * rotateDirectionObject:getTransformation())
 end
 
 Rotate.inputEnded = function(input, gameProcessedEvent)
     return
 end
 
-Rotate.construct = function()
-    return
+-- TODO: Eventually this will accept arguments e.g. obstacle type, which tell it which inputs to activate/deactivate
+Rotate.activateInputs = function()
+    local toActivate = {
+        Enum.KeyCode.Q.Name,
+        Enum.KeyCode.E.Name,
+        Enum.KeyCode.R.Name,
+        Enum.KeyCode.F.Name,
+        Enum.KeyCode.T.Name,
+        Enum.KeyCode.G.Name,
+    }
+    for _,key in pairs(toActivate) do
+        Rotate.INPUTS[key]:setIsActive(true)
+    end
 end
 
-Rotate.deconstruct = function()
-    return
+Rotate.deactivateAllInputs = function()
+    for _,rotateDir in pairs(Rotate.INPUTS) do
+        rotateDir:setIsActive(false)
+    end
 end
 
 return Rotate
