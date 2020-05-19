@@ -1,6 +1,7 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local Fly = require(script.Parent.Fly)
 local Rotate = require(script.Parent.Rotate)
+local Elevate = require(script.Parent.Elevate)
 local InputRouter = {}
 
 -- Connection instances for bound event listeners
@@ -15,6 +16,9 @@ local routeInputBegan = function(input, gameProcessedEvent)
     elseif (Rotate.INPUTS[input.KeyCode.Name] ~= nil) then
         Utils.logDebug("Routing input began to Rotate: " .. input.KeyCode.Name)
         Rotate.inputBegan(input, gameProcessedEvent)
+    elseif (Elevate.INPUTS[input.KeyCode.Name] ~= nil) then
+        Utils.logDebug("Routing input began to Elevate: " .. input.KeyCode.Name)
+        Elevate.inputBegan(input, gameProcessedEvent)
     else
         Utils.logDebug("Dropping unrouted input began: " .. input.KeyCode.Name)
     end
@@ -27,6 +31,9 @@ local routeInputEnded = function(input, gameProcessedEvent)
     elseif (Rotate.INPUTS[input.KeyCode.Name] ~= nil) then
         Utils.logDebug("Routing input ended to Rotate: " .. input.KeyCode.Name)
         Rotate.inputEnded(input, gameProcessedEvent)
+    elseif (Elevate.INPUTS[input.KeyCode.Name] ~= nil) then
+        Utils.logDebug("Routing input ended to Elevate: " .. input.KeyCode.Name)
+        Elevate.inputEnded(input, gameProcessedEvent)
     else
         Utils.logDebug("Dropping unrouted input ended: " .. input.KeyCode.Name)
     end

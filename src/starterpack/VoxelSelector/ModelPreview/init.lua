@@ -3,7 +3,7 @@ local ModelLoader = require(game.ReplicatedStorage.Scripts.ModelLoader)
 local ModelPreview = {}
 
 -- Places voxels' center coordinates at multiples of VOXEL_SIZE
-local VOXEL_SIZE = 10
+ModelPreview.VOXEL_SIZE = 10
 -- TODO: generalize to any obstacle
 local MODEL_TO_PREVIEW = game.ReplicatedStorage.Models.Obstacle_Test
 
@@ -15,17 +15,17 @@ local VECTOR3_PREVIEW_CENTER = nil
 local _cFrameOnlyCurrentAngles = nil
 
 -- Y-coordinate of the manipulation plane (where all mouse input gets translated to updating preview)
-local _coordManipulationPlane = 6
+local _coordPreviewPlane = 6
 
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
-    local voxelX = Utils.round(p.X/VOXEL_SIZE) * VOXEL_SIZE
-    local voxelY = Utils.round(p.Y/VOXEL_SIZE) * VOXEL_SIZE
-    local voxelZ = Utils.round(p.Z/VOXEL_SIZE) * VOXEL_SIZE
+    local voxelX = Utils.round(p.X/ModelPreview.VOXEL_SIZE) * ModelPreview.VOXEL_SIZE
+    local voxelY = Utils.round(p.Y/ModelPreview.VOXEL_SIZE) * ModelPreview.VOXEL_SIZE
+    local voxelZ = Utils.round(p.Z/ModelPreview.VOXEL_SIZE) * ModelPreview.VOXEL_SIZE
     return Vector3.new(voxelX, voxelY, voxelZ)
 end
 
--- Extend vector st until it hits plane y=_coordManipulationPlane and find closest voxel center to the intersection
+-- Extend vector st until it hits plane y=_coordPreviewPlane and find closest voxel center to the intersection
 local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
     --[[
     local epsilon = 1e-3
@@ -36,7 +36,7 @@ local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t
     local TminusEpsilonST = t - epsilonST
     return getVoxelCenter(TminusEpsilonST)
     ]]
-    local r = (_coordManipulationPlane - s.Y) / (t.Y - s.Y)
+    local r = (_coordPreviewPlane - s.Y) / (t.Y - s.Y)
     Utils.visualizeRay(Ray.new(s, r*(t-s)))
     return getVoxelCenter(s + r * (t - s))
 end
@@ -50,14 +50,14 @@ local initializePreview = --[[void]] function(--[[Vector3]] center, --[[Model]] 
     65
     78
     ]]
-    local p1 = center + Vector3.new(VOXEL_SIZE/2, VOXEL_SIZE/2, VOXEL_SIZE/2)
-    local p2 = p1 + Vector3.new(-VOXEL_SIZE, 0, 0)
-    local p3 = p2 + Vector3.new(0, 0, -VOXEL_SIZE)
-    local p4 = p3 + Vector3.new(VOXEL_SIZE, 0, 0)
-    local p5 = p1 + Vector3.new(0, -VOXEL_SIZE, 0)
-    local p6 = p2 + Vector3.new(0, -VOXEL_SIZE, 0)
-    local p7 = p3 + Vector3.new(0, -VOXEL_SIZE, 0)
-    local p8 = p4 + Vector3.new(0, -VOXEL_SIZE, 0)
+    local p1 = center + Vector3.new(ModelPreview.VOXEL_SIZE/2, ModelPreview.VOXEL_SIZE/2, ModelPreview.VOXEL_SIZE/2)
+    local p2 = p1 + Vector3.new(-ModelPreview.VOXEL_SIZE, 0, 0)
+    local p3 = p2 + Vector3.new(0, 0, -ModelPreview.VOXEL_SIZE)
+    local p4 = p3 + Vector3.new(ModelPreview.VOXEL_SIZE, 0, 0)
+    local p5 = p1 + Vector3.new(0, -ModelPreview.VOXEL_SIZE, 0)
+    local p6 = p2 + Vector3.new(0, -ModelPreview.VOXEL_SIZE, 0)
+    local p7 = p3 + Vector3.new(0, -ModelPreview.VOXEL_SIZE, 0)
+    local p8 = p4 + Vector3.new(0, -ModelPreview.VOXEL_SIZE, 0)
     local color = ColorSequence.new(Color3.new(0,1,1))
 
     MODEL_BOUNDING_BOX = Instance.new("Model")
@@ -103,9 +103,14 @@ ModelPreview.setPreviewCFrame = --[[void]] function(--[[CFrame]] newCFrame)
     _cFrameOnlyCurrentAngles = newCFrame - newCFrame.p
 end
 
-ModelPreview.setCoordManipulationPlane = --[[void]] function(--[[number]] newCoordManipulationPlane)
-    Modelpreview.setPreviewCFrame(ModelPreview.getPreviewCFrame() + Vector3.new(0, newCoordManipulationPlane, 0))
-    _coordManipulationPlane = newCoordManipulationPlane
+ModelPreview.getPreviewPlane = --[[number]] function()
+    return _coordPreviewPlane
+end
+
+ModelPreview.setPreviewPlane = --[[void]] function(--[[number]] newPreviewPlane)
+    local currentCFrame = ModelPreview.getPreviewCFrame()
+    ModelPreview.setPreviewCFrame(currentCFrame + (-currentCFrame.p + Vector3.new(0, newPreviewPlane, 0)))
+    _coordPreviewPlane = newPreviewPlane
 end
 
 ModelPreview.isActive = --[[boolean]] function()
