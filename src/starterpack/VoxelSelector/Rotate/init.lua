@@ -1,41 +1,41 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local ModelPreview = require(script.Parent.ModelPreview)
-local ManipulateDirection = require(script.Parent.ManipulateDirection)
-local Manipulate = {}
+local RotateDirection = require(script.Parent.RotateDirection)
+local Rotate = {}
 
-Manipulate.INPUTS = {
-    [Enum.KeyCode.Q.Name] = ManipulateDirection("AnticlockwiseAboutY",
+Rotate.INPUTS = {
+    [Enum.KeyCode.Q.Name] = RotateDirection("AnticlockwiseAboutY",
         CFrame.Angles(0, math.rad(90), 0)),
-    [Enum.KeyCode.E.Name] = ManipulateDirection("ClockwiseAboutY",
+    [Enum.KeyCode.E.Name] = RotateDirection("ClockwiseAboutY",
         CFrame.Angles(0, math.rad(-90), 0)),
-    [Enum.KeyCode.R.Name] = ManipulateDirection("AnticlockwiseAboutX",
+    [Enum.KeyCode.R.Name] = RotateDirection("AnticlockwiseAboutX",
         CFrame.Angles(math.rad(90), 0, 0)),
-    [Enum.KeyCode.F.Name] = ManipulateDirection("ClockwiseAboutX",
+    [Enum.KeyCode.F.Name] = RotateDirection("ClockwiseAboutX",
         CFrame.Angles(math.rad(-90), 0, 0)),
-    [Enum.KeyCode.T.Name] = ManipulateDirection("AnticlockwiseAboutZ",
+    [Enum.KeyCode.T.Name] = RotateDirection("AnticlockwiseAboutZ",
         CFrame.Angles(0, 0, math.rad(90))),
-    [Enum.KeyCode.G.Name] = ManipulateDirection("ClockwiseAboutZ",
+    [Enum.KeyCode.G.Name] = RotateDirection("ClockwiseAboutZ",
         CFrame.Angles(0, 0, math.rad(-90))),
-    [Enum.KeyCode.X.Name] = ManipulateDirection("Placeholder",
+    [Enum.KeyCode.X.Name] = RotateDirection("Placeholder",
         CFrame.Angles(0, 0, 0)),
 }
 
-Manipulate.inputBegan = function(input, gameProcessedEvent)
-    local rotateDirectionObject = Manipulate.INPUTS[input.KeyCode.Name]
+Rotate.inputBegan = function(input, gameProcessedEvent)
+    local rotateDirectionObject = Rotate.INPUTS[input.KeyCode.Name]
     if (not rotateDirectionObject:getIsActive()) then
-        Utils.logDebug("Manipulate discarding routed input " .. input.KeyCode.Name .. " because the rotation direction is not active")
+        Utils.logDebug("Rotate discarding routed input " .. input.KeyCode.Name .. " because the rotation direction is not active")
         return
     end
     Utils.logDebug("Applying rotation direction: " .. rotateDirectionObject:getName())
     ModelPreview.setPreviewCFrame(ModelPreview.getPreviewCFrame() * rotateDirectionObject:getTransformation())
 end
 
-Manipulate.inputEnded = function(input, gameProcessedEvent)
+Rotate.inputEnded = function(input, gameProcessedEvent)
     return
 end
 
 -- TODO: Eventually this will accept arguments e.g. obstacle type, which tell it which inputs to activate/deactivate
-Manipulate.activateInputs = function()
+Rotate.activateInputs = function()
     local toActivate = {
         Enum.KeyCode.Q.Name,
         Enum.KeyCode.E.Name,
@@ -45,14 +45,14 @@ Manipulate.activateInputs = function()
         Enum.KeyCode.G.Name,
     }
     for _,key in pairs(toActivate) do
-        Manipulate.INPUTS[key]:setIsActive(true)
+        Rotate.INPUTS[key]:setIsActive(true)
     end
 end
 
-Manipulate.deactivateAllInputs = function()
-    for _,rotateDir in pairs(Manipulate.INPUTS) do
+Rotate.deactivateAllInputs = function()
+    for _,rotateDir in pairs(Rotate.INPUTS) do
         rotateDir:setIsActive(false)
     end
 end
 
-return Manipulate
+return Rotate

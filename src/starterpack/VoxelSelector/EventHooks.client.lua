@@ -2,7 +2,7 @@ local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 -- Other scripts in this tool may not have replicated yet?
 local InputRouter = require(script.Parent:WaitForChild("InputRouter"))
 local Fly = require(script.Parent:WaitForChild("Fly"))
-local Manipulate = require(script.Parent:WaitForChild("Manipulate"))
+local Rotate = require(script.Parent:WaitForChild("Rotate"))
 local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
 
 local tool = script.Parent
@@ -11,7 +11,7 @@ local player = game.Players.LocalPlayer
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
     InputRouter.bindListeners()
-    Manipulate.activateInputs()
+    Rotate.activateInputs()
     Fly.construct()
 
     local onMouseMove = function()
@@ -30,7 +30,7 @@ end
 local onUnequip = function()
     Utils.logDebug(player.Name .. " unequipped " .. tool.Name)
     InputRouter.unbindListeners()
-    Manipulate.deactivateAllInputs()
+    Rotate.deactivateAllInputs()
     Fly.deconstruct()
     ModelPreview.clearPreview()
 end

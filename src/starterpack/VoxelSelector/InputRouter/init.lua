@@ -1,6 +1,6 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local Fly = require(script.Parent.Fly)
-local Manipulate = require(script.Parent.Manipulate)
+local Rotate = require(script.Parent.Rotate)
 local InputRouter = {}
 
 -- Connection instances for bound event listeners
@@ -12,9 +12,9 @@ local routeInputBegan = function(input, gameProcessedEvent)
     if (Fly.INPUTS[input.KeyCode.Name] ~= nil) then
         Utils.logDebug("Routing input began to Fly: " .. input.KeyCode.Name)
         Fly.inputBegan(input, gameProcessedEvent)
-    elseif (Manipulate.INPUTS[input.KeyCode.Name] ~= nil) then
-        Utils.logDebug("Routing input began to Manipulate: " .. input.KeyCode.Name)
-        Manipulate.inputBegan(input, gameProcessedEvent)
+    elseif (Rotate.INPUTS[input.KeyCode.Name] ~= nil) then
+        Utils.logDebug("Routing input began to Rotate: " .. input.KeyCode.Name)
+        Rotate.inputBegan(input, gameProcessedEvent)
     else
         Utils.logDebug("Dropping unrouted input began: " .. input.KeyCode.Name)
     end
@@ -24,9 +24,9 @@ local routeInputEnded = function(input, gameProcessedEvent)
     if (Fly.INPUTS[input.KeyCode.Name] ~= nil) then
         Utils.logDebug("Routing input ended to Fly: " .. input.KeyCode.Name)
         Fly.inputEnded(input, gameProcessedEvent)
-    elseif (Manipulate.INPUTS[input.KeyCode.Name] ~= nil) then
-        Utils.logDebug("Routing input ended to Manipulate: " .. input.KeyCode.Name)
-        Manipulate.inputEnded(input, gameProcessedEvent)
+    elseif (Rotate.INPUTS[input.KeyCode.Name] ~= nil) then
+        Utils.logDebug("Routing input ended to Rotate: " .. input.KeyCode.Name)
+        Rotate.inputEnded(input, gameProcessedEvent)
     else
         Utils.logDebug("Dropping unrouted input ended: " .. input.KeyCode.Name)
     end
