@@ -9,10 +9,10 @@ local MODEL_TO_PREVIEW = game.ReplicatedStorage.Models.Obstacle_Test
 
 local MODEL_BOUNDING_BOX = nil
 local MODEL_BOUNDED_OBJECT = nil
-local VECTOR3_PREVIEW_CENTER = nil
+local _cFramePreviewPosition = nil
 
 -- Contains the angle rotation only for the preview, so that when moving around the preview, the rotation angle doesn't change
-local _cFrameOnlyCurrentAngles = nil
+local _cFrameAnglesOnly = nil
 
 -- Y-coordinate of the manipulation plane (where all mouse input gets translated to updating preview)
 local _coordPreviewPlane = 6
@@ -26,7 +26,7 @@ local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
 end
 
 -- Extend vector st until it hits plane y=_coordPreviewPlane and find closest voxel center to the intersection
-local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
+ModelPreview.getPreviewCenter = --[[CFrame]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
     --[[
     local epsilon = 1e-3
     if (target ~= nil and target.Parent == MODEL_BOUNDED_OBJECT) then
@@ -38,7 +38,7 @@ local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t
     ]]
     local r = (_coordPreviewPlane - s.Y) / (t.Y - s.Y)
     Utils.visualizeRay(Ray.new(s, r*(t-s)))
-    return getVoxelCenter(s + r * (t - s))
+    return CFrame.new(getVoxelCenter(s + r * (t - s)))
 end
 
 -- Initialize preview, where the model to preview's primary part is centered around goal CFrame
@@ -90,17 +90,16 @@ local initializePreview = --[[void]] function(--[[Vector3]] center, --[[Model]] 
     Utils.placeBeam(p4, p8, "e48", color, MODEL_BOUNDING_BOX)
 
     MODEL_BOUNDED_OBJECT = ModelLoader.loadModel(modelToPreview, CFrame.new(center))
-    _cFrameOnlyCurrentAngles = CFrame.Angles(0, 0, 0)
+    _cFrameAnglesOnly = CFrame.Angles(0, 0, 0)
 end
 
 ModelPreview.getPreviewCFrame = --[[CFrame]] function()
     return MODEL_BOUNDED_OBJECT.PrimaryPart.CFrame
 end
 
-ModelPreview.setPreviewCFrame = --[[void]] function(--[[CFrame]] newCFrame)
-    MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(newCFrame)
-    MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(newCFrame)
-    _cFrameOnlyCurrentAngles = newCFrame - newCFrame.p
+ModelPreview.setPreviewCFrameAnglesOnly = --[[void]] function(--[[CFrame]] newCFrameAnglesOnly)
+    _cFrameAnglesOnly = newCFrameAnglesOnly - newCFrameAnglesOnly.p
+    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() * _cFrameAnglesOnly)
 end
 
 ModelPreview.getPreviewPlane = --[[number]] function()
@@ -108,26 +107,25 @@ ModelPreview.getPreviewPlane = --[[number]] function()
 end
 
 ModelPreview.setPreviewPlane = --[[void]] function(--[[number]] newPreviewPlane)
-    local currentCFrame = ModelPreview.getPreviewCFrame()
-    ModelPreview.setPreviewCFrame(currentCFrame + (-currentCFrame.p + Vector3.new(0, newPreviewPlane, 0)))
     _coordPreviewPlane = newPreviewPlane
+    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() + Vector3.new(0, newPreviewPlane, 0))
 end
 
 ModelPreview.isActive = --[[boolean]] function()
     return MODEL_BOUNDED_OBJECT ~= nil
 end
 
-ModelPreview.renderPreview = --[[void]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] targetPart)
-    local currentPreviewCenter = getPreviewCenter(s, t, targetPart)
-    if (currentPreviewCenter ~= VECTOR3_PREVIEW_CENTER) then
+ModelPreview.renderPreview = --[[void]] function(--[[CFrame]] cFrame)
+    if (cFrame ~= _cFramePreviewPosition) then
         -- This should only happen once, when the tool is equipped
         if (not ModelPreview.isActive()) then
-            initializePreview(currentPreviewCenter, MODEL_TO_PREVIEW)
+            initializePreview(cFrame.p, MODEL_TO_PREVIEW)
         else
-            ModelPreview.setPreviewCFrame(CFrame.new(currentPreviewCenter) * _cFrameOnlyCurrentAngles, MODEL_TO_PREVIEW)
+            MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(cFrame)
+            MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(cFrame)
         end
-        VECTOR3_PREVIEW_CENTER = currentPreviewCenter
-        Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(VECTOR3_PREVIEW_CENTER))
+        _cFramePreviewPosition = cFrame
+        Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(_cFramePreviewPosition.p))
     end
 end
 

@@ -27,7 +27,7 @@ Rotate.inputBegan = function(input, gameProcessedEvent)
         return
     end
     Utils.logDebug("Applying rotation direction: " .. rotateDirectionObject:getName())
-    ModelPreview.setPreviewCFrame(ModelPreview.getPreviewCFrame() * rotateDirectionObject:getTransformation())
+    ModelPreview.setPreviewCFrameAnglesOnly(ModelPreview.getPreviewCFrame() * rotateDirectionObject:getTransformation())
 end
 
 Rotate.inputEnded = function(input, gameProcessedEvent)

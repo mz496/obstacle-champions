@@ -23,7 +23,7 @@ local onEquip = function(mouse)
         Fly.updateGyroTargetCFrame(tCFrame)
         Fly.updateTrajectory(sCFrame)
         --Utils.visualizeRay(Ray.new(s, t - s))
-        ModelPreview.renderPreview(s, t, mouse.Target)
+        ModelPreview.renderPreview(ModelPreview.getPreviewCenter(s, t, mouse.Target))
     end
     mouse.Move:Connect(onMouseMove)
 end
