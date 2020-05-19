@@ -14,6 +14,9 @@ local VECTOR3_PREVIEW_CENTER = nil
 -- Contains the angle rotation only for the preview, so that when moving around the preview, the rotation angle doesn't change
 local _cFrameOnlyCurrentAngles = nil
 
+-- Y-coordinate of the manipulation plane (where all mouse input gets translated to updating preview)
+local _coordManipulationPlane = 6
+
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
     local voxelX = Utils.round(p.X/VOXEL_SIZE) * VOXEL_SIZE
@@ -22,9 +25,9 @@ local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
     return Vector3.new(voxelX, voxelY, voxelZ)
 end
 
--- Returns the center of the farthest observed voxel along a vector from s to t
--- Take a point along the s-t vector almost at t but just a bit toward s and find its corresponding voxel
+-- Extend vector st until it hits plane y=_coordManipulationPlane and find closest voxel center to the intersection
 local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
+    --[[
     local epsilon = 1e-3
     if (target ~= nil and target.Parent == MODEL_BOUNDED_OBJECT) then
         epsilon = -epsilon
@@ -32,6 +35,10 @@ local getPreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t
     local epsilonST = (t-s) * epsilon
     local TminusEpsilonST = t - epsilonST
     return getVoxelCenter(TminusEpsilonST)
+    ]]
+    local r = (_coordManipulationPlane - s.Y) / (t.Y - s.Y)
+    Utils.visualizeRay(Ray.new(s, r*(t-s)))
+    return getVoxelCenter(s + r * (t - s))
 end
 
 -- Initialize preview, where the model to preview's primary part is centered around goal CFrame
@@ -94,6 +101,11 @@ ModelPreview.setPreviewCFrame = --[[void]] function(--[[CFrame]] newCFrame)
     MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(newCFrame)
     MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(newCFrame)
     _cFrameOnlyCurrentAngles = newCFrame - newCFrame.p
+end
+
+ModelPreview.setCoordManipulationPlane = --[[void]] function(--[[number]] newCoordManipulationPlane)
+    Modelpreview.setPreviewCFrame(ModelPreview.getPreviewCFrame() + Vector3.new(0, newCoordManipulationPlane, 0))
+    _coordManipulationPlane = newCoordManipulationPlane
 end
 
 ModelPreview.isActive = --[[boolean]] function()
