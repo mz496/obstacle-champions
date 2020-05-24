@@ -1,5 +1,5 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local FlyDirection = require(script.Parent.FlyDirection)
+local FlyDirection = require(script.Parent:WaitForChild("FlyDirection"))
 local Fly = {}
 
 local player = game.Players.LocalPlayer

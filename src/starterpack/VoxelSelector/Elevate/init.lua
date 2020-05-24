@@ -1,6 +1,6 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local ModelPreview = require(script.Parent.ModelPreview)
-local ElevateDirection = require(script.Parent.ElevateDirection)
+local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
+local ElevateDirection = require(script.Parent:WaitForChild("ElevateDirection"))
 local Elevate = {}
 
 Elevate.INPUTS = {

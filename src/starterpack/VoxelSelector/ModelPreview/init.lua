@@ -41,9 +41,21 @@ local getVector3PreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vect
     return getVoxelCenter(s + r * (t - s))
 end
 
+local renderPreview = --[[void]] function(--[[CFrame]] cFrame)
+    if (not ModelPreview.isActive()) then
+        Utils.logFatal("Model preview not active!")
+    end
+    if (cFrame ~= _cFramePreviewPosition) then
+        MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(cFrame)
+        MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(cFrame)
+        _cFramePreviewPosition = cFrame
+        Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(_cFramePreviewPosition.p))
+    end
+end
+
 -- Initialize preview, where the model to preview's primary part is centered around goal CFrame
 ModelPreview.initializePreview = --[[void]] function(--[[Vector3]] lookVectorTail, --[[Vector3]] lookVectorHead, --[[number]] coordPreviewPlane, --[[Model]] modelToPreview)
-    local center = ModelPreview.getVector3PreviewCenter(lookVectorTail, lookVectorHead, coordPreviewPlane)
+    local center = getVector3PreviewCenter(lookVectorTail, lookVectorHead, coordPreviewPlane)
     --[[ Viewed from the top front:
     21
     34
@@ -102,7 +114,7 @@ end
 
 ModelPreview.setPreviewCFrameAnglesOnly = --[[void]] function(--[[CFrame]] newCFrameAnglesOnly)
     _cFrameAnglesOnly = newCFrameAnglesOnly - newCFrameAnglesOnly.p
-    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() * _cFrameAnglesOnly)
+    renderPreview(ModelPreview.getPreviewCFrame() * _cFrameAnglesOnly)
 end
 
 ModelPreview.getPreviewPlane = --[[number]] function()
@@ -112,29 +124,17 @@ end
 ModelPreview.setPreviewPlane = --[[void]] function(--[[number]] newPreviewPlane)
     local diff = newPreviewPlane - _coordPreviewPlane
     _coordPreviewPlane = newPreviewPlane
-    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() + Vector3.new(0, diff, 0))
+    renderPreview(ModelPreview.getPreviewCFrame() + Vector3.new(0, diff, 0))
 end
 
 ModelPreview.isActive = --[[boolean]] function()
     return MODEL_BOUNDED_OBJECT ~= nil
 end
 
-ModelPreview.setPreviewPosition = function(lookVectorTail, lookVectorHead)
-    _position = ModelPreview.getVector3PreviewCenter(lookVectorTail, lookVectorHead, _coordPreviewPlane)
+ModelPreview.setPreviewPosition = --[[void]] function(--[[Vector3]] lookVectorTail, --[[Vector3]] lookVectorHead)
+    _position = getVector3PreviewCenter(lookVectorTail, lookVectorHead, _coordPreviewPlane)
     local currentCFrame = ModelPreview.getPreviewCFrame()
-    ModelPreview.renderPreview(currentCFrame + (-currentCFrame.p + _position))
-end
-
-local renderPreview = --[[void]] function(--[[CFrame]] cFrame)
-    if (not ModelPreview.isActive()) then
-        Utils.logFatal("Model preview not active!")
-    end
-    if (cFrame ~= _cFramePreviewPosition) then
-        MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(cFrame)
-        MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(cFrame)
-        _cFramePreviewPosition = cFrame
-        Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(_cFramePreviewPosition.p))
-    end
+    renderPreview(currentCFrame + (-currentCFrame.p + _position))
 end
 
 ModelPreview.clearPreview = --[[void]] function()

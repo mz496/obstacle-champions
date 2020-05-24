@@ -1,7 +1,7 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local Fly = require(script.Parent.Fly)
-local Rotate = require(script.Parent.Rotate)
-local Elevate = require(script.Parent.Elevate)
+local Fly = require(script.Parent:WaitForChild("Fly"))
+local Rotate = require(script.Parent:WaitForChild("Rotate"))
+local Elevate = require(script.Parent:WaitForChild("Elevate"))
 local InputRouter = {}
 
 -- Connection instances for bound event listeners

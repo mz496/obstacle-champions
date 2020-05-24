@@ -1,6 +1,7 @@
 local Utils = require(game.ReplicatedStorage.Scripts.Utils)
-local ModelPreview = require(script.Parent.ModelPreview)
-local RotateDirection = require(script.Parent.RotateDirection)
+local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
+local RotateDirection = require(script.Parent:WaitForChild("RotateDirection"))
+
 local Rotate = {}
 
 Rotate.INPUTS = {
