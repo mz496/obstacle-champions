@@ -15,7 +15,7 @@ local _cFramePreviewPosition = nil
 local _cFrameAnglesOnly = nil
 
 -- Y-coordinate of the manipulation plane (where all mouse input gets translated to updating preview)
-local _coordPreviewPlane = 6
+local _coordPreviewPlane = nil
 
 -- Returns the center of the voxel to which p belongs
 local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
@@ -26,7 +26,7 @@ local getVoxelCenter = --[[Vector3]] function(--[[Vector3]] p)
 end
 
 -- Extend vector st until it hits plane y=_coordPreviewPlane and find closest voxel center to the intersection
-ModelPreview.getPreviewCenter = --[[CFrame]] function(--[[Vector3]] s, --[[Vector3]] t, --[[Part]] target)
+local getVector3PreviewCenter = --[[Vector3]] function(--[[Vector3]] s, --[[Vector3]] t, --[[number]] coordPreviewPlane)
     --[[
     local epsilon = 1e-3
     if (target ~= nil and target.Parent == MODEL_BOUNDED_OBJECT) then
@@ -36,13 +36,14 @@ ModelPreview.getPreviewCenter = --[[CFrame]] function(--[[Vector3]] s, --[[Vecto
     local TminusEpsilonST = t - epsilonST
     return getVoxelCenter(TminusEpsilonST)
     ]]
-    local r = (_coordPreviewPlane - s.Y) / (t.Y - s.Y)
+    local r = (coordPreviewPlane - s.Y) / (t.Y - s.Y)
     Utils.visualizeRay(Ray.new(s, r*(t-s)))
-    return CFrame.new(getVoxelCenter(s + r * (t - s)))
+    return getVoxelCenter(s + r * (t - s))
 end
 
 -- Initialize preview, where the model to preview's primary part is centered around goal CFrame
-local initializePreview = --[[void]] function(--[[Vector3]] center, --[[Model]] modelToPreview)
+ModelPreview.initializePreview = --[[void]] function(--[[Vector3]] lookVectorTail, --[[Vector3]] lookVectorHead, --[[number]] coordPreviewPlane, --[[Model]] modelToPreview)
+    local center = ModelPreview.getVector3PreviewCenter(lookVectorTail, lookVectorHead, coordPreviewPlane)
     --[[ Viewed from the top front:
     21
     34
@@ -91,6 +92,8 @@ local initializePreview = --[[void]] function(--[[Vector3]] center, --[[Model]] 
 
     MODEL_BOUNDED_OBJECT = ModelLoader.loadModel(modelToPreview, CFrame.new(center))
     _cFrameAnglesOnly = CFrame.Angles(0, 0, 0)
+    _coordPreviewPlane = coordPreviewPlane
+    _position = center
 end
 
 ModelPreview.getPreviewCFrame = --[[CFrame]] function()
@@ -107,23 +110,28 @@ ModelPreview.getPreviewPlane = --[[number]] function()
 end
 
 ModelPreview.setPreviewPlane = --[[void]] function(--[[number]] newPreviewPlane)
+    local diff = newPreviewPlane - _coordPreviewPlane
     _coordPreviewPlane = newPreviewPlane
-    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() + Vector3.new(0, newPreviewPlane, 0))
+    ModelPreview.renderPreview(ModelPreview.getPreviewCFrame() + Vector3.new(0, diff, 0))
 end
 
 ModelPreview.isActive = --[[boolean]] function()
     return MODEL_BOUNDED_OBJECT ~= nil
 end
 
-ModelPreview.renderPreview = --[[void]] function(--[[CFrame]] cFrame)
+ModelPreview.setPreviewPosition = function(lookVectorTail, lookVectorHead)
+    _position = ModelPreview.getVector3PreviewCenter(lookVectorTail, lookVectorHead, _coordPreviewPlane)
+    local currentCFrame = ModelPreview.getPreviewCFrame()
+    ModelPreview.renderPreview(currentCFrame + (-currentCFrame.p + _position))
+end
+
+local renderPreview = --[[void]] function(--[[CFrame]] cFrame)
+    if (not ModelPreview.isActive()) then
+        Utils.logFatal("Model preview not active!")
+    end
     if (cFrame ~= _cFramePreviewPosition) then
-        -- This should only happen once, when the tool is equipped
-        if (not ModelPreview.isActive()) then
-            initializePreview(cFrame.p, MODEL_TO_PREVIEW)
-        else
-            MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(cFrame)
-            MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(cFrame)
-        end
+        MODEL_BOUNDED_OBJECT:SetPrimaryPartCFrame(cFrame)
+        MODEL_BOUNDING_BOX:SetPrimaryPartCFrame(cFrame)
         _cFramePreviewPosition = cFrame
         Utils.logInfo("Selected voxel changed: "..Utils.toStringVector3(_cFramePreviewPosition.p))
     end

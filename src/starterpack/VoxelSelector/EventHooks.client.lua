@@ -8,6 +8,8 @@ local ModelPreview = require(script.Parent:WaitForChild("ModelPreview"))
 local tool = script.Parent
 local player = game.Players.LocalPlayer
 
+local INIT_PREVIEW_PLANE = 6
+
 local onEquip = function(mouse)
     Utils.logDebug(player.Name .. " equipped " .. tool.Name)
     InputRouter.bindListeners()
@@ -23,7 +25,10 @@ local onEquip = function(mouse)
         Fly.updateGyroTargetCFrame(tCFrame)
         Fly.updateTrajectory(sCFrame)
         --Utils.visualizeRay(Ray.new(s, t - s))
-        ModelPreview.renderPreview(ModelPreview.getPreviewCenter(s, t, mouse.Target))
+        if (not ModelPreview.isActive()) then
+            ModelPreview.initializePreview(s, t, INIT_PREVIEW_PLANE, game.ReplicatedStorage.Models.Obstacle_Test)
+        end
+        ModelPreview.setPreviewPosition(s, t)
     end
     mouse.Move:Connect(onMouseMove)
 end
