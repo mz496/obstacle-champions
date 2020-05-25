@@ -1,18 +1,8 @@
--- TODO: Create a shared datamodel for classpaths?
-local State =
-require(game.ServerScriptService.Server.State)
-local Event =
-require(game.ServerScriptService.Server.Event)
-local StateTransition =
-require(game.ServerScriptService.Server.StateTransition)
-local StateTransitionTable =
-require(game.ServerScriptService.Server.StateTransitionTable)
-local Utils =
-require(game.ReplicatedStorage.Scripts.Utils)
-local GameLifecycleConstants =
-require(game.ServerScriptService.Server.Constants.GameLifecycle)
-local States = GameLifecycleConstants.States
-local Events = GameLifecycleConstants.Events
+local State = require(game.ServerScriptService.Server.State)
+local Event = require(game.ServerScriptService.Server.Event)
+local StateTransition = require(game.ServerScriptService.Server.StateTransition)
+local StateTransitionTable = require(game.ServerScriptService.Server.StateTransitionTable)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 
 --[[
 GameLifecycleManager is a singleton managing the game state.
@@ -20,18 +10,15 @@ It accepts events and transitions to new states accordingly using acceptEvent(se
 ]]
 local GameLifecycleManager = {}
 
-GameLifecycleManager.new = --[[GameLifecycleManager]] function(self)
-    self._currentState = States.START
-
-    self._transitionTable = StateTransitionTable({
-        StateTransition(States.START, States.END, {Events.WIN, Events.LOSS}),
-        StateTransition(States.START, States.TIE, {Events.TIE})
-    })
+GameLifecycleManager.init = --[[GameLifecycleManager]] function(self, --[[State]] startState, --[[StateTransitionTable]] transitionTable, onTransitionFunction)
+    self._currentState = startState
+    self._transitionTable = transitionTable
+    self._onTransitionFunction = onTransitionFunction
+    Utils.logDebug("Initializing game lifecycle manager with start state "..tostring(startState))
     return self
 end
 
 GameLifecycleManager.acceptEvent = --[[void]] function(self, --[[Event]] event)
-    print("accepted event: " .. tostring(event))
     -- TODO: Have an event queue
     self:_handleEvent(event)
 end
@@ -41,13 +28,15 @@ GameLifecycleManager.getCurrentState = --[[State]] function(self)
 end
 
 GameLifecycleManager._handleEvent = --[[void]] function(self, --[[Event]] event)
-    print("handling event: " .. tostring(event))
+    Utils.logDebug("Handling event: " .. tostring(event))
     local testForTransitionState = self._transitionTable:testEventForTransitionFromState(event, self._currentState)
     if testForTransitionState ~= nil then
-        print("transitioning from "..tostring(self._currentState).." to "..tostring(testForTransitionState))
+        Utils.logDebug("Transitioning from "..tostring(self._currentState).." to "..tostring(testForTransitionState))
+        self._onTransitionFunction(self._currentState, testForTransitionState)
         self._currentState = testForTransitionState
+    else
+        Utils.logDebug("Discarding event "..tostring(event))
     end
 end
 
 return GameLifecycleManager
-

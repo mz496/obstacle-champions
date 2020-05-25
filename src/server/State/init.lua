@@ -22,7 +22,7 @@ State.__tostring = --[[string]] function(self)
     return "State<name="..self._name..">"
 end
 
-State.__eq = --[[boolean]] function(self, --[[State]] op1, --[[State]] op2)
+State.__eq = --[[boolean]] function(--[[State]] op1, --[[State]] op2)
     if op1 == nil then return false end
     if op2 == nil then return false end
     return op1._name == op2._name

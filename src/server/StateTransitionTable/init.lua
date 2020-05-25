@@ -10,9 +10,9 @@ StateTransitionTable._new = --[[StateTransitionTable]] function(self, --[[ State
     return self
 end
 
-StateTransitionTable.testEventForTransitionFromState = --[[boolean]] function(self, --[[Event]] event, --[[State]] state)
-    for _, transition in ipairs(self._transitions) do
-        if transition:shouldTransitionOn(event) then
+StateTransitionTable.testEventForTransitionFromState = --[[boolean]] function(self, --[[Event]] event, --[[State]] from)
+    for _, transition in pairs(self._transitions) do
+        if transition:getFromState() == from and transition:shouldTransitionOn(event) then
             return transition:getToState()
         end
     end
@@ -20,4 +20,3 @@ StateTransitionTable.testEventForTransitionFromState = --[[boolean]] function(se
 end
 
 return StateTransitionTable
-
