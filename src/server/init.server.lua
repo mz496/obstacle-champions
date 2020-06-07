@@ -16,7 +16,7 @@ TestEZ.TestBootstrap:run(tests, nil, nil)
 ModelLoader.loadModel(game.Workspace.Pile, CFrame.new(Vector3.new(0, 10, 0)))
 Utils.logInfo("Loaded map!")
 
-local gameRunner = GameRunner:init()
+GameRunner.init()
 
 local onPlayerPlaceObstacle = function(player, --[[CFrame]] obstacleCFrame)
     print(player.Name.." placed obstacle at "..Utils.toStringVector3(obstacleCFrame.p))
@@ -34,14 +34,14 @@ game.ReplicatedStorage.Remote.Function_Died.OnServerInvoke = onPlayerDied
 
 local onPlayerLeft = function(player)
     print(player.Name.." left")
-    gameRunner.removePlayer(player)
+    GameRunner.removePlayer(player)
 end
 game.Players.PlayerRemoving:Connect(onPlayerLeft)
 
 game.Players.PlayerAdded:Connect(function(player)
     print("A player was added, starting game now")
-    gameRunner.addQueuedPlayer(player)
-    gameRunner.startGame()
+    GameRunner.addQueuedPlayer(player)
+    GameRunner.startGame()
 end)
 
 --[[
@@ -50,4 +50,5 @@ local s = require(game.ServerStorage.Scripts.ServerAdmin);
 s.grantVoxelSelector(game.Players.LEG0builder)
 s.removeVoxelSelector(game.Players.LEG0builder)
 s.kill(game.Players.LEG0builder)
+s.incrementRoundScore(game.Players.LEG0builder, 1000)
 ]]

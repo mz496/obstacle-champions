@@ -38,4 +38,17 @@ PlayerState.__tostring = --[[string]] function(self)
     return "PlayerState<"..self._name..",currentRoundScore="..Utils.truncateNumber(self._currentRoundScore)..",currentGameScore="..Utils.truncateNumber(self._currentGameScore)..">"
 end
 
+PlayerState.toValue = --[[StringValue]] function(self)
+    local val = Instance.new("StringValue")
+    val.Name = self._name
+    val.Value = self._name
+    local currentRoundScore = Instance.new("NumberValue", val)
+    currentRoundScore.Name = "CurrentRoundScore"
+    currentRoundScore.Value = self._currentRoundScore
+    local currentGameScore = Instance.new("NumberValue", val)
+    currentGameScore.Name = "CurrentGameScore"
+    currentGameScore.Value = self._currentGameScore
+    return val
+end
+
 return PlayerState

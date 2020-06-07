@@ -14,6 +14,9 @@
       },
       "Tools": {
         "$path": "src/serverstorage/tools"
+      },
+      "State": {
+        "$path": "src/serverstorage/state"
       }
     },
 

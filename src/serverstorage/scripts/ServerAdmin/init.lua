@@ -1,4 +1,6 @@
 local PlayerToolManager = require(game.ServerStorage.Scripts.PlayerToolManager)
+local GameRunner = require(game.ServerScriptService.Server.GameRunner)
+local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 
 local ServerAdmin = {}
 
@@ -17,5 +19,15 @@ end
 ServerAdmin.removeActivePlayer = function(--[[Player]] p)
     game.Players[p]:Destroy()
     game.Players[p].Parent = nil
+end
+
+ServerAdmin.incrementRoundScore = function(--[[Player]] p, --[[number]] increment)
+    GameRunner.incrementRoundScore(p, increment)
+end
+
+ServerAdmin.removeActivePlayer = function(--[[Player]] p)
+    GameRunner.removeActivePlayer(p)
+end
+
 
 return ServerAdmin
