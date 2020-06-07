@@ -5,33 +5,14 @@ local Utils = require(game.ReplicatedStorage.Scripts.Utils)
 local PlayerState, super = Class.classDefinition(Object)
 PlayerState._className = "PlayerState"
 PlayerState._new = --[[PlayerState]] function(self,
-        --[[string]] name, --[[number]] currentRoundScore, --[[number]] currentGameScore)
+        --[[string]] name, --[[number]] currentRoundScore, --[[number]] currentGameScore, --[[boolean]] isAlive)
     self = super._new(self)
     self._name = name
 
     self._currentRoundScore = 0
     self._currentGameScore = 0
+    self._isAlive = isAlive
     return self
-end
-
-PlayerState.getName = --[[string]] function(self)
-    return self._name
-end
-
-PlayerState.getCurrentRoundScore = --[[number]] function(self)
-    return self._currentRoundScore
-end
-
-PlayerState.setCurrentRoundScore = --[[void]] function(self, s)
-    self._currentRoundScore = s
-end
-
-PlayerState.getCurrentGameScore = --[[number]] function(self)
-    return self._currentGameScore
-end
-
-PlayerState.setCurrentGameScore = --[[void]] function(self, s)
-    self._currentGameScore = s
 end
 
 PlayerState.__tostring = --[[string]] function(self)
@@ -48,6 +29,9 @@ PlayerState.toValue = --[[StringValue]] function(self)
     local currentGameScore = Instance.new("NumberValue", val)
     currentGameScore.Name = "CurrentGameScore"
     currentGameScore.Value = self._currentGameScore
+    local isAlive = Instance.new("BoolValue", val)
+    isAlive.Name = "IsAlive"
+    isAlive.Value = self._isAlive
     return val
 end
 

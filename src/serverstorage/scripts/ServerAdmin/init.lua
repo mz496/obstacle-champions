@@ -25,9 +25,4 @@ ServerAdmin.incrementRoundScore = function(--[[Player]] p, --[[number]] incremen
     GameRunner.incrementRoundScore(p, increment)
 end
 
-ServerAdmin.removeActivePlayer = function(--[[Player]] p)
-    GameRunner.removeActivePlayer(p)
-end
-
-
 return ServerAdmin

@@ -11,7 +11,7 @@ State._new = --[[State]] function(self, name)
 end
 
 State.execute = --[[void]] function(self)
-    Utils.logWarn("base execution logic was not overridden")
+    Utils.logInfo("Entered state: "..self._name)
 end
 
 State.getName = --[[string]] function(self)

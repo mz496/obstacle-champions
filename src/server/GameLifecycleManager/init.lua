@@ -15,6 +15,7 @@ GameLifecycleManager.init = --[[GameLifecycleManager]] function(self, --[[State]
     self._transitionTable = transitionTable
     self._onTransitionFunction = onTransitionFunction
     Utils.logDebug("Initializing game lifecycle manager with start state "..tostring(startState))
+    startState:execute()
     return self
 end
 
@@ -34,6 +35,7 @@ GameLifecycleManager._handleEvent = --[[void]] function(self, --[[Event]] event)
         Utils.logDebug("Transitioning from "..tostring(self._currentState).." to "..tostring(testForTransitionState))
         self._onTransitionFunction(self._currentState, testForTransitionState)
         self._currentState = testForTransitionState
+        self._currentState:execute()
     else
         Utils.logDebug("Discarding event "..tostring(event))
     end

@@ -19,27 +19,27 @@ Utils.logInfo("Loaded map!")
 GameRunner.init()
 
 local onPlayerPlaceObstacle = function(player, --[[CFrame]] obstacleCFrame)
-    print(player.Name.." placed obstacle at "..Utils.toStringVector3(obstacleCFrame.p))
-    print("TEMPORARY SWITCH: sending no-one-in-progress event")
-    gameRunner.noOneInProgress()
+    Utils.logDebug("Server invoke: "..player.Name.." placed obstacle at "..Utils.toStringVector3(obstacleCFrame.p))
     ModelLoader.loadModel(game.ReplicatedStorage.Models.Obstacle_Test, obstacleCFrame)
     return true
 end
 game.ReplicatedStorage.Remote.Function_PlaceObstacle.OnServerInvoke = onPlayerPlaceObstacle
 
 local onPlayerDied = function(player)
-    print(player.Name.." died")
+    Utils.logDebug("Server invoke: "..player.Name.." died")
+    GameRunner.onPlayerDied(player)
 end
 game.ReplicatedStorage.Remote.Function_Died.OnServerInvoke = onPlayerDied
 
 local onPlayerLeft = function(player)
-    print(player.Name.." left")
-    GameRunner.removePlayer(player)
+    Utils.logDebug("Server invoke: "..player.Name.." left")
+    GameRunner.removeQueuedPlayer(player)
+    GameRunner.removeActivePlayer(player)
 end
 game.Players.PlayerRemoving:Connect(onPlayerLeft)
 
 game.Players.PlayerAdded:Connect(function(player)
-    print("A player was added, starting game now")
+    print("TEMP: A player was added, starting game now")
     GameRunner.addQueuedPlayer(player)
     GameRunner.startGame()
 end)
